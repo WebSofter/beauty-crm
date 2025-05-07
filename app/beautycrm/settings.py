@@ -19,7 +19,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Путь к .env на уровень выше BASE_DIR
 env_path = BASE_DIR.parent / ".env"
-
+if not env_path.exists():
+    env_path = BASE_DIR / ".env"
 # Загрузка переменных окружения из .env файла
 load_dotenv(dotenv_path=env_path)
 
