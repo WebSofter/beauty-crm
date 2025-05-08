@@ -13,8 +13,10 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 
 # Установка переменных окружения
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+# Установка переменных окружения
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV DEBUG=True
 
 # Копирование кода приложения
 COPY app/ /app/
@@ -28,6 +30,9 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 RUN chmod +x /app/entrypoint.sh
 
 COPY .env.example /.env
+
+# Порт для работы приложения
+EXPOSE 8000
 
 # Запуск entrypoint скрипта
 ENTRYPOINT ["/app/entrypoint.sh"]
