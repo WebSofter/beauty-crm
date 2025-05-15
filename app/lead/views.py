@@ -75,7 +75,7 @@ class LeadCreateView(LoginRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
         team = self.request.user.userprofile.get_active_team()
         context['team'] = team
-        context['title'] = 'Add lead'
+        context['title'] = 'Добавить лида'
 
         return context
 
