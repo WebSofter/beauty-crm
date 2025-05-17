@@ -12,6 +12,19 @@
             <a href="{% url 'dashboard:index' %}" class="py-4 px-6 bg-fuchsia-600 rounded-xl text-white">Панель</a>
             <a href="{% url 'leads:list' %}" class="py-4 px-6 bg-fuchsia-600 rounded-xl text-white">Лиды</a>
             <a href="{% url 'clients:list' %}" class="py-4 px-6 bg-fuchsia-600 rounded-xl text-white">Клиенты</a>
+            {% comment %} <a href="{% url 'clients:list' %}" class="py-4 px-6 bg-fuchsia-600 rounded-xl text-white">Мастера</a> {% endcomment %}
+            <div class="relative group inline-block">
+                <a href="{% url 'services:list' %}" class="py-4 px-6 bg-fuchsia-600 rounded-xl text-white inline-flex items-center">
+                    Услуги
+                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </a>
+                <div class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                    <a href="{% url 'services:list' %}" class="block px-4 py-2 text-gray-800 hover:bg-fuchsia-100">Услуги</a>
+                    <a href="{% url 'services:category_list' %}" class="block px-4 py-2 text-gray-800 hover:bg-fuchsia-100">Категории</a>
+                </div>
+            </div>
             <a href="{% url 'userprofile:myaccount' %}" class="py-4 px-6 bg-fuchsia-800 rounded-xl text-white">Мой аккаунт</a>
         {% else %}
             <a href="{% url 'login' %}" class="py-4 px-6 bg-fuchsia-600 rounded-xl text-white">Вход</a>

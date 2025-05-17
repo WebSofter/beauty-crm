@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'lead',
     'team',
     'userprofile',
+    'service',
 ]
 
 MIDDLEWARE = [
