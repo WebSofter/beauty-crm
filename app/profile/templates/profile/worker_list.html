@@ -1,0 +1,58 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block content %}
+    <div class="py-6 px-6">
+        <h1 class="mb-4 text-xl">{{title}}</h1>
+
+        <a href="{% url create %}" class="inline-block py-4 px-6 bg-fuchsia-600 rounded-xl text-white">Добавить</a>
+    
+        {% if object_list %}
+            <div class="mt-6 flex justify-between">
+                <p class="py-4 px-2 bg-gray-200 font-semibold w-full">Имя</p>
+                <p class="py-4 px-2 bg-gray-200 font-semibold w-full">Дата найма</p>
+                <p class="py-4 px-2 bg-gray-200 font-semibold w-full">Специализации</p>
+                <p class="py-4 px-2 bg-gray-200 font-semibold w-full">Статус</p>
+                <p class="py-4 px-2 bg-gray-200 font-semibold w-full">Обновлен</p>
+                <p class="py-4 px-2 bg-gray-200 font-semibold w-full">Изменить</p>
+            </div>
+
+            {% for profile in object_list %}
+                <div class="flex justify-between">
+                    <p class="py-2 px-2 w-full {% cycle 'bg-gray-100' '' %}">
+                        {{ profile.user.first_name }} {{ profile.user.last_name }}
+                    </p>
+                    <p class="py-2 px-2 w-full {% cycle 'bg-gray-100' '' %}">{{ profile.hire_date }}</p>
+                        <ul class="py-2 px-2 w-full {% cycle 'bg-gray-100' '' %}">
+                            {% for position in profile.position.all %}
+                                <li class="inline-block bg-fuchsia-100 text-fuchsia-800 text-xs font-semibold mr-2 mb-2 px-3 py-1 rounded-full">
+                                    {{ position.name }}
+                                </li>
+                                {% empty %}
+                                <li >Нет позиций</li>
+                            {% endfor %}
+                        </ul>
+                    <p class="py-2 px-2 w-full {% cycle 'bg-gray-100' '' %}">
+                        {% if profile.is_active %}
+                            Работает
+                        {% else %}
+                            Не работает
+                        {% endif %}
+                    </p>
+                    <p class="py-2 px-2 w-full {% cycle 'bg-gray-100' '' %}">{{ profile.updated_at }}</p>
+                    <p class="py-2 px-2 w-full {% cycle 'bg-gray-100' '' %}">
+                        <a href="{% url 'profile:worker_update' profile.id %}" class="inline-block p-2 bg-blue-500 hover:bg-blue-600 text-white rounded-l-full transition duration-200 my-2">
+                            <i class="fa fa-pen"></i>
+                        </a>
+                        <a  href="#" onclick="deleteResource(event, '{% url 'profile:worker_delete' profile.id %}', '{{ csrf_token }}')" class="inline-block p-2 bg-red-500 hover:bg-red-600 text-white rounded-r-full transition duration-200 my-2">
+                            <i class="fa fa-trash"></i>
+                        </a>
+                    </p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="mt-6 px-2">Нет данных для раздела "{{title}}"</p>
+        {% endif %}
+    </div>
+{% endblock %}

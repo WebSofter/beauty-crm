@@ -18,6 +18,25 @@ class ServiceListView(LoginRequiredMixin, ListView):
         queryset = super(ServiceListView, self).get_queryset()
         return queryset.all()
 
+class ServiceCreateView(LoginRequiredMixin, CreateView):
+    model = Service
+    fields = ('category', 'name', 'description', 'duration', 'price', 'is_active',)
+    success_url = reverse_lazy('services:list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        context['form'] = ServiceForm()
+        context['title'] = 'Добавить услугу'
+
+        return context
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.created_by = self.request.user
+        self.object.save()
+        
+        return redirect(self.get_success_url())
 class ServiceDetailView(LoginRequiredMixin, DetailView):
     model = Service
     
@@ -57,28 +76,6 @@ class ServiceUpdateView(LoginRequiredMixin, UpdateView):
     def get_queryset(self):
         queryset = super(ServiceUpdateView, self).get_queryset()
         return queryset.filter(pk=self.kwargs.get('pk'))
-    
-class ServiceCreateView(LoginRequiredMixin, CreateView):
-    model = Service
-    fields = ('category', 'name', 'description', 'duration', 'price', 'is_active',)
-    success_url = reverse_lazy('services:list')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        
-        # team = self.request.user.userprofile.get_active_team()
-        context['form'] = ServiceForm()
-        context['title'] = 'Добавить услугу'
-
-        return context
-
-    def form_valid(self, form):
-        self.object = form.save(commit=False)
-        self.object.created_by = self.request.user
-        self.object.team = self.request.user.userprofile.get_active_team()
-        self.object.save()
-        
-        return redirect(self.get_success_url())
 
 ###
 ## Service category
@@ -110,8 +107,6 @@ class ServiceCategoryCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
-        # self.object.created_by = self.request.user
-        # self.object.team = self.request.user.userprofile.get_active_team()
         self.object.save()
         
         return redirect(self.get_success_url())
