@@ -10,6 +10,7 @@ from profile.forms import LoginForm
 urlpatterns = [
     path('', index, name='index'),
     path('dashboard/services/', include('service.urls')),
+    path('dashboard/appointment/', include('appointment.urls')),
     path('dashboard/', include('profile.urls')),
     path('dashboard/', include('dashboard.urls')),
     path('about/', about, name='about'),

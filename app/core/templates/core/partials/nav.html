@@ -18,10 +18,11 @@
                     </svg>
                 </a>
                 <div class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-fuchsia-100">Зарплата</a>
+                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-fuchsia-100">Зарплаты</a>
                     <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-fuchsia-100">Отчеты</a>
                 </div>
             </div>
+            <a href="{% url 'appointment:list' %}" class="py-4 px-6 bg-fuchsia-600 rounded-xl text-white">Записи</a>
             <div class="relative group inline-block">
                 <a href="{% url 'profile:client_list' %}" class="py-4 px-6 bg-fuchsia-600 rounded-xl text-white inline-flex items-center">
                     Соцфонд
