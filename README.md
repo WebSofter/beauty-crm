@@ -1,25 +1,6 @@
 
 
-Миграции базы данных 
-
-Создание миграций:
-```bash
-# Для встроенных приложений Django
-python manage.py makemigrations
-
-# Для вашего приложения (если есть модели)
-python manage.py makemigrations core
-```
-Применение миграций:
-`bashpython manage.py migrate`
-
-Проверка статуса миграций:
-```bash
-python manage.py showmigrations
-```
-
-
-Запуск приложения
+# Запуск приложения локально
 
 Создание суперпользователя для доступа к админке:
 bashpython manage.py createsuperuser
@@ -59,4 +40,22 @@ pythonINSTALLED_APPS = [
     # ... другие встроенные приложения
     'core',  # Ваше приложение
 ]
+```
+
+Миграции базы данных 
+
+Создание миграций:
+```bash
+# Для встроенных приложений Django
+python manage.py makemigrations
+
+# Для вашего приложения (если есть модели)
+python manage.py makemigrations core
+```
+Применение миграций:
+`bashpython manage.py migrate`
+
+Проверка статуса миграций:
+```bash
+python manage.py showmigrations
 ```
