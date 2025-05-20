@@ -12,6 +12,8 @@ services:
       timeout: 5s
       retries: 10
     restart: always
+    networks:
+      - crm
 
   web:
     build: .
@@ -28,8 +30,24 @@ services:
       db:
         condition: service_healthy
     restart: always
+    networks:
+      - crm
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      PMA_HOST: ${DB_HOST}
+    #   - PMA_ARBITRARY=1
+    networks:
+      - crm
 
 volumes:
   mysql_data:
   static_volume:
   media_volume:
+
+networks:
+  crm:
