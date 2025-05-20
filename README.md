@@ -27,7 +27,8 @@ docker-compose up -d db phpmyadmin
 8. запустить `python manage.py runserver 0.0.0.0:8000`
 9. сайт-crm будет работать в браузере на поту `localhost:8000`
 
-# Выполнение команд в контейнере
+# Прочие полезные команды
+## Выполнение команд в контейнере
 ```bash
 docker-compose exec web python manage.py migrate
 docker-compose exec web python manage.py createsuperuser
@@ -35,7 +36,7 @@ docker-compose exec web python manage.py createsuperuser
 В артефакте также есть пример простой модели для тестирования базы данных и настройки админки Django.
 После запуска сервера, вы сможете открыть админ-панель по адресу http://localhost:8000/admin/ и убедиться, что всё настроено правильно и работает с MySQL.
 
-# Прочие команды
+## Создание приложений и миграций
 python manage.py startapp core
 
 Добавьте приложение в INSTALLED_APPS в settings.py:
