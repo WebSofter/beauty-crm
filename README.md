@@ -12,7 +12,6 @@ python manage.py runserver
 # Для доступа извне
 `python manage.py runserver 0.0.0.0:8000`
 
-
 В Docker-окружении
 Если используете Docker из предыдущего примера:
 ```bash
