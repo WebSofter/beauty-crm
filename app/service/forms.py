@@ -24,12 +24,15 @@ class ServiceCategoryForm(forms.ModelForm):
 class ServiceForm(forms.ModelForm):
     class Meta:
         model = Service
-        fields = ('category', 'name', 'description', 'duration', 'price', 'is_active')
+        fields = ('category', 'name', 'gender', 'description', 'duration', 'price', 'is_active')
         widgets = {
             'category': forms.Select(attrs={
                 'class': FORMS['FIELD_CLASS'],
             }),
             'name': forms.TextInput(attrs={
+                'class': FORMS['FIELD_CLASS'],
+            }),
+            'gender': forms.Select(attrs={
                 'class': FORMS['FIELD_CLASS'],
             }),
             'description': forms.Textarea(attrs={

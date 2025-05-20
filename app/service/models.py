@@ -1,5 +1,11 @@
 from django.db import models
 
+GENDER_CHOICES = [
+    ('M', 'Мужской'),
+    ('F', 'Женский'),
+    ('U', 'Универсал'),
+]
+
 class ServiceCategory(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
@@ -11,6 +17,7 @@ class ServiceCategory(models.Model):
 class Service(models.Model):
     category = models.ForeignKey(ServiceCategory, on_delete=models.CASCADE, related_name='services')
     name = models.CharField(max_length=255)
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, default='U')
     description = models.TextField(blank=True, null=True)
     duration = models.IntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2)

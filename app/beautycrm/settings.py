@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'profile',
     'service',
     'appointment',
+    'payment'
 ]
 
 MIDDLEWARE = [

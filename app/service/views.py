@@ -20,7 +20,7 @@ class ServiceListView(LoginRequiredMixin, ListView):
 
 class ServiceCreateView(LoginRequiredMixin, CreateView):
     model = Service
-    fields = ('category', 'name', 'description', 'duration', 'price', 'is_active',)
+    fields = ('category', 'name', 'gender', 'description', 'duration', 'price', 'is_active',)
     success_url = reverse_lazy('services:list')
 
     def get_context_data(self, **kwargs):

@@ -49,3 +49,4 @@ htmlcov/
 *.bak
 *.swp
 *.swo
+tmp

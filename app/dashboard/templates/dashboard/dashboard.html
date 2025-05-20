@@ -1,8 +1,9 @@
 {% extends 'core/base.html' %}
-
+{% load static %}
 {% block title %}Дашбоард{% endblock %}
 
 {% block content %}
+
 <div class="py-6 px-6">
     <h1 class="mb-6 text-xl">Дашбоард</h1>
 
@@ -15,5 +16,63 @@
             <h2 class="mb-4 text-lg">Новые клиенты</h2>
         </div>
     </div>
+
+  <!-- Пример базовой структуры дашборда -->
+  <div class="flex">
+    <!-- Сайдбар -->
+    <div class="sidebar w-64 bg-white shadow-xl p-4 h-screen">
+      <div class="logo mb-8">
+        <h1 class="text-xl font-bold">Мой Dashboard</h1>
+      </div>
+      <ul class="menu">
+        <li class="mb-2"><a href="{% url 'index' %}" class="block p-2 rounded hover:bg-gray-100">Главная</a></li>
+        <li class="mb-2"><a href="#" class="block p-2 rounded hover:bg-gray-100">Профиль</a></li>
+        <li class="mb-2"><a href="#" class="block p-2 rounded hover:bg-gray-100">Настройки</a></li>
+      </ul>
+    </div>
+    
+    <!-- Основной контент -->
+    <div class="main-content flex-grow p-6">
+      <div class="header mb-6">
+        <h2 class="text-2xl font-bold">Обзор</h2>
+      </div>
+      
+      <!-- Карточки статистики -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div class="stat-card bg-white p-6 rounded-xl shadow">
+          <h3 class="text-gray-500 mb-2">Пользователи</h3>
+          <p class="text-3xl font-bold" id="users-count">0</p>
+        </div>
+        <div class="stat-card bg-white p-6 rounded-xl shadow">
+          <h3 class="text-gray-500 mb-2">Доход</h3>
+          <p class="text-3xl font-bold" id="revenue">₽0</p>
+        </div>
+        <div class="stat-card bg-white p-6 rounded-xl shadow">
+          <h3 class="text-gray-500 mb-2">Заказы</h3>
+          <p class="text-3xl font-bold" id="orders">0</p>
+        </div>
+      </div>
+      
+      <!-- Таблица -->
+      <div class="table-container bg-white p-6 rounded-xl shadow">
+        <h3 class="text-xl font-bold mb-4">Последние транзакции</h3>
+        <table class="w-full">
+          <thead>
+            <tr class="border-b">
+              <th class="text-left p-2">ID</th>
+              <th class="text-left p-2">Клиент</th>
+              <th class="text-left p-2">Сумма</th>
+              <th class="text-left p-2">Статус</th>
+            </tr>
+          </thead>
+          <tbody id="transactions-table">
+            <!-- Данные будут добавлены через JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
 </div>
+
 {% endblock %}

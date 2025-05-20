@@ -12,6 +12,7 @@
             <div class="mt-6 flex justify-between">
                 <p class="py-4 px-2 bg-gray-200 font-semibold w-full">Имя</p>
                 <p class="py-4 px-2 bg-gray-200 font-semibold w-full">Категория</p>
+                <p class="py-4 px-2 bg-gray-200 font-semibold w-full">Гендер</p>
                 <p class="py-4 px-2 bg-gray-200 font-semibold w-full">Описание</p>
                 <p class="py-4 px-2 bg-gray-200 font-semibold w-full">Продолжит. (мин.)</p>
                 <p class="py-4 px-2 bg-gray-200 font-semibold w-full">Цена</p>
@@ -25,6 +26,7 @@
                         <a href="{% url 'services:detail' service.id %}">{{ service.name }}</a>
                     </p>
                     <p class="py-2 px-2 w-full {% cycle 'bg-gray-100' '' %}">{{ service.category }}</p>
+                    <p class="py-2 px-2 w-full {% cycle 'bg-gray-100' '' %}">{{ service.get_gender_display }}</p>
                     <p class="py-2 px-2 w-full {% cycle 'bg-gray-100' '' %}">{{ service.description }}</p>
                     <p class="py-2 px-2 w-full {% cycle 'bg-gray-100' '' %}">{{ service.duration }}</p>
                     <p class="py-2 px-2 w-full {% cycle 'bg-gray-100' '' %}">{{ service.price }}</p>
