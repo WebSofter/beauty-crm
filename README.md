@@ -1,24 +1,6 @@
-Команды для первой миграции и запуска Django
-Создание и настройка проекта
 
-Создайте новый проект и приложение:
-bash# Создание проекта
-django-admin startproject config .
 
-# Создание приложения
-python manage.py startapp core
-
-Добавьте приложение в INSTALLED_APPS в settings.py:
-```python
-pythonINSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    # ... другие встроенные приложения
-    'core',  # Ваше приложение
-]
-```
-
-Миграции базы данных
+Миграции базы данных 
 
 Создание миграций:
 ```bash
@@ -65,3 +47,16 @@ docker-compose exec web python manage.py createsuperuser
 ```
 В артефакте также есть пример простой модели для тестирования базы данных и настройки админки Django.
 После запуска сервера, вы сможете открыть админ-панель по адресу http://localhost:8000/admin/ и убедиться, что всё настроено правильно и работает с MySQL.
+
+# Прочие команды
+python manage.py startapp core
+
+Добавьте приложение в INSTALLED_APPS в settings.py:
+```python
+pythonINSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    # ... другие встроенные приложения
+    'core',  # Ваше приложение
+]
+```
