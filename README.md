@@ -1,6 +1,6 @@
 
 
-# Запуск приложения локально
+# Запуск приложения локально без docker
 для запуска нужно будет:
 1. иметь сервер MySQL
 2. импортировать дамп БД из папки dumps через какой-нибудь менеджер(hedisql или phpmyqdmin)
@@ -12,13 +12,20 @@
 6. запустить `python manage.py runserver 0.0.0.0:8000`
 7. сайт-crm будет работать в браузере на поту `localhost:8000`
 
-В Docker-окружении
-Если используете Docker из предыдущего примера:
+# Запуск приложения локально с docker
+1. переименовать .env.local в .env
+2. поднять контейнеры
 ```bash
 # Сборка и запуск
-docker-compose build
-docker-compose up -d
+docker-compose up -d db phpmyadmin
 ```
+3. потом зайти в phpMyAdmin на порту `localhost:8080` через данные из .env
+4. импортировать дамп БД из папки dumps
+5. создать виртуальнео окружение в корне проекта командо `python -m venv .vevn` и активировать `source .venv/Scripts/activate`(для Windows) или `source .venv/bin/activate`(для Linuxt/Mac)
+6. зайти в папку `cd app`
+7. установить зависимости `pip install -r requirements.txt`
+8. запустить `python manage.py runserver 0.0.0.0:8000`
+9. сайт-crm будет работать в браузере на поту `localhost:8000`
 
 # Выполнение команд в контейнере
 ```bash
