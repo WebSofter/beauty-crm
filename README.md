@@ -1,10 +1,16 @@
 
 
 # Запуск приложения локально
-
-
-# Запуск
-`python manage.py runserver 0.0.0.0:8000`
+для запуска нужно будет:
+1. иметь сервер MySQL
+2. импортировать дамп БД из папки dumps через какой-нибудь менеджер(hedisql или phpmyqdmin)
+3. переименовать .env.local в .env
+4. прописать данные БД в .env
+3. создать виртуальнео окружение в корне проекта командо `python -m venv .vevn` и активировать `source .venv/Scripts/activate`(для Windows) или `source .venv/bin/activate`(для Linuxt/Mac)
+4. зайти в папку `cd app`
+5. установить зависимости `pip install -r requirements.txt`
+6. запустить `python manage.py runserver 0.0.0.0:8000`
+7. сайт-crm будет работать в браузере на поту `localhost:8000`
 
 В Docker-окружении
 Если используете Docker из предыдущего примера:
