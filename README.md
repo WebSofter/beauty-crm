@@ -2,14 +2,8 @@
 
 # Запуск приложения локально
 
-Создание суперпользователя для доступа к админке:
-bashpython manage.py createsuperuser
 
-Запуск сервера разработки:
-bash# Локально
-python manage.py runserver
-
-# Для доступа извне
+# Запуск
 `python manage.py runserver 0.0.0.0:8000`
 
 В Docker-окружении
@@ -58,3 +52,9 @@ python manage.py makemigrations core
 ```bash
 python manage.py showmigrations
 ```
+Создание суперпользователя для доступа к админке:
+bashpython manage.py createsuperuser
+
+Запуск сервера разработки:
+bash# Локально
+python manage.py runserver
