@@ -10,19 +10,65 @@
         <strong>Логин: </strong>{{ request.user.username }}
     </p>
 
-    <p class="mb-2">
-        {% if active_team %}
-            <strong>Команда: </strong><a href="#">{{ active_team.name }}</a>
+    <div class="py-6 px-6 flex justify-center">
+        <div class="w-6/6">
+        <h1 class="mb-4 text-xl text-center">Мои записи</h1>
 
-            {% if active_team.created_by == request.user %}
-                <a href="#">(Изменить)</a>
-            {% endif %}
+
+        {% if appointments %}
+            <div class="mt-6 flex justify-between">
+                <p class="py-4 px-2 bg-gray-200 font-semibold w-full">Номер</p>
+                <p class="py-4 px-2 bg-gray-200 font-semibold w-full">Клиент</p>
+                <p class="py-4 px-2 bg-gray-200 font-semibold w-full">Мастер</p>
+                <p class="py-4 px-2 bg-gray-200 font-semibold w-full">Услуга</p>
+                <p class="py-4 px-2 bg-gray-200 font-semibold w-full">Начало</p>
+                <p class="py-4 px-2 bg-gray-200 font-semibold w-full">Статус</p>
+                <p class="py-4 px-2 bg-gray-200 font-semibold w-full">Заметки</p>
+            </div>
+
+            {% for appointment in appointments %}
+                <div class="flex justify-between">
+                    <p class="py-2 px-2 w-full {% cycle 'bg-gray-100' '' %}">
+                        #{{ appointment.id }}
+                    </p>
+                    <p class="py-2 px-2 w-full {% cycle 'bg-gray-100' '' %}">
+                        {{ appointment.client.user.get_full_name }}<br/>
+                        <span class="inline-block bg-fuchsia-100 text-fuchsia-800 text-xs font-semibold mr-2 mb-2 px-3 py-1 rounded-full">
+                        {{ appointment.client.phone }}
+                        </span><br/>
+                        <span class="inline-block bg-fuchsia-100 text-fuchsia-800 text-xs font-semibold mr-2 mb-2 px-3 py-1 rounded-full">
+                        {{ appointment.client.user.email }}
+                        </span>
+                    </p>
+                    <p class="py-2 px-2 w-full {% cycle 'bg-gray-100' '' %}">
+                        {{ appointment.worker.user.get_full_name }}<br/>
+                        <span class="inline-block bg-fuchsia-100 text-fuchsia-800 text-xs font-semibold mr-2 mb-2 px-3 py-1 rounded-full">
+                        {{ appointment.worker.user.username }}
+                        </span>
+                    </p>
+                    <p class="py-2 px-2 w-full {% cycle 'bg-gray-100' '' %}">
+                        {{ appointment.service.name }} <br/>
+                        <span class="inline-block bg-fuchsia-100 text-fuchsia-800 text-xs font-semibold mr-2 mb-2 px-3 py-1 rounded-full">
+                        {{ appointment.service.price }}₽
+                        </span>
+                    </p>
+                    <p class="py-2 px-2 w-full {% cycle 'bg-gray-100' '' %}">
+                        <time class="inline-block bg-fuchsia-100 text-fuchsia-800 text-xs font-semibold mr-2 mb-2 px-3 py-1 rounded-full">
+                        {{ appointment.start_time }}
+                        </time>
+                    </p>
+                    <p class="py-2 px-2 w-full {% cycle 'bg-gray-100' '' %}">{{ appointment.get_status_display }}</p>
+                    <p class="py-2 px-2 w-full {% cycle 'bg-gray-100' '' %}">{{ appointment.notes }}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="mt-6 px-2">Нет активных записей</p>
         {% endif %}
-    </p>
+        </div>
+    </div>
 
     <hr class="mb-4">
 
-    {% comment %} <a href="{% url 'logout' %}" class="inline-block py-4 px-6 bg-red-600 rounded-xl text-white">Выход</a> {% endcomment %}
 <form method="post" action="{% url 'logout' %}">
     {% csrf_token %}
     <button type="submit" class="inline-block py-4 px-6 bg-red-600 rounded-xl text-white">Выйти</button>

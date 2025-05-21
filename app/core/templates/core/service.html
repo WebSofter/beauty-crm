@@ -1,0 +1,70 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Услуги{% endblock %}
+
+{% block content %}
+
+      <section id="overview" class="py-20 lg:py-28">
+        <div class="container mx-auto px-4">
+          <div class="flex flex-col lg:flex-row items-start justify-between">
+            <!-- Left Column Features -->
+            <div class="w-full lg:w-1/4 mb-12 lg:mb-0" data-aos="fade-up">
+                <h1 class="text-3xl mb-8 text-center">Мужской сервис</h1>
+                {% for service_category in service_categories.all %}
+                    {% for service in service_category.services.all %}
+                        {% if service.gender == 'M' or service.gender == 'U' %}
+                          {% if forloop.counter == 1 %}
+                            <h3 class="text-lg font-medium bg-black text-white p-2 pl-4 mt-8">{{ service_category.name }}</h3>
+                          {% endif %}
+                          <div class="featured-item mb-3">
+                              <h3 class="text-lg font-medium">{{ service.name }} — от {{ service.price }}₽</h3>
+                              <p class="text-gray-600">
+                                  {{ service.description }}
+                              </p>
+                              <a href="{% url 'order' %}?service={{service.id}}" class="mt-2 px-4 py-2 bg-fuchsia-600 text-white rounded hover:bg-fuchsia-900 flex items-center gap-2">
+                                <i class="fa-solid fa-calendar-days"></i> записаться
+                              </a>
+                          </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            </div>
+
+            <!-- Center Image -->
+            <div class="w-full lg:w-2/5 mb-12 lg:mb-0 px-4" data-aos="zoom-out">
+              <div class="image-holder text-center">
+                <img
+                  src="{% static 'images/main/male-female.jpeg' %}"
+                  alt="headphone"
+                  class="rounded-2xl w-full max-w-md mx-auto"
+                />
+              </div>
+            </div>
+
+            <!-- Right Column Features -->
+            <div class="w-full lg:w-1/4" data-aos="fade-up">
+                <h1 class="text-3xl mb-8 text-center">Женский сервис</h1>
+                {% for service_category in service_categories.all %}
+                    {% for service in service_category.services.all %}
+                        {% if service.gender == 'F' or service.gender == 'U' %}
+                          {% if forloop.counter == 1 %}
+                            <h3 class="text-lg font-medium bg-black text-white p-2 pl-4 mt-8">{{ service_category.name }}</h3>
+                          {% endif %}
+                          <div class="featured-item mb-3">
+                              <h3 class="text-lg font-medium">{{ service.name }} — от {{ service.price }}₽</h3>
+                              <p class="text-gray-600">
+                                  {{ service.description }}
+                              </p>
+                              <button class="mt-2 px-4 py-2 bg-fuchsia-600 text-white rounded hover:bg-fuchsia-900 flex items-center gap-2">
+                                <i class="fa-solid fa-calendar-days"></i> записаться
+                              </button>
+                          </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            </div>
+          </div>
+        </div>
+      </section>
+
+{% endblock %}

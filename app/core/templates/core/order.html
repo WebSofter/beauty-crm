@@ -1,0 +1,46 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Запись на процедуру{% endblock %}
+
+{% block content %}
+
+    <div class="py-6 px-6 flex flex-col justify-center items-center min-h-screen ">
+        <h1 class="text-xl">Запись на процедуру {{service.name}}</h1>
+        <div class="mb-6 p-6 bg-white rounded-xl shadow flex flex-col gap-2 w-3/5">
+            <div class="flex justify-between">
+                <span class="font-semibold text-gray-700">Наименование:</span>
+                <span class="text-gray-900">{{ service.name }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="font-semibold text-gray-700">Продолжительность:</span>
+                <span class="text-gray-900">{{ service.duration }} мин</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="font-semibold text-gray-700">Гендер:</span>
+                <span class="text-gray-900">{{ service.get_gender_display }}</span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="font-semibold text-gray-700">Цена:</span>
+                <span class="text-gray-900 font-extrabold text-2xl tracking-wide">
+                    {{ service.price }} <span class="text-base font-semibold">₽</span>
+                </span>
+            </div>
+        </div>
+        <form method="post" action=".">
+            {% csrf_token %}
+
+            {% for field in form %}
+                <div class="mb-4">
+                <label class="block text-gray-700">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <p class="text-red-500 text-sm">{{ field.errors.0 }}</p>
+                {% endif %}
+                </div>
+            {% endfor %}
+
+            <button class="py-4 px-8 bg-fuchsia-500 text-white rounded-xl">Отправить</button>
+        </form>
+    </div>
+
+{% endblock %}

@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.contrib.auth import views
 from django.urls import path, include
 
-from core.views import index, about
+from core.views import index, about, service, OrderView
 from profile.forms import LoginForm
 
 urlpatterns = [
@@ -15,6 +15,8 @@ urlpatterns = [
     path('dashboard/', include('profile.urls')),
     path('dashboard/', include('dashboard.urls')),
     path('about/', about, name='about'),
+    path('service/', service, name='service'),
+    path('order/', OrderView.as_view(), name='order'),
     path('log-in/', views.LoginView.as_view(template_name='account/login.html', authentication_form=LoginForm), name='login'),
     path('log-out/', views.LogoutView.as_view(), name='logout'),
     path('admin/', admin.site.urls),

@@ -340,4 +340,18 @@ def signup(request):
 
 @login_required
 def myaccount(request):
-    return render(request, 'account/myaccount.html')
+    
+    # Получаем профиль клиента, связанный с текущим пользователем
+    try:
+        client_profile = ClientProfile.objects.get(user=request.user)
+    except ClientProfile.DoesNotExist:
+        client_profile = None
+
+    # Получаем все записи Appointment для этого клиента
+    appointments = []
+    if client_profile:
+        appointments = client_profile.appointments.all()
+
+    return render(request, 'account/myaccount.html', {
+        'appointments': appointments,
+    })
