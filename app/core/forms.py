@@ -7,13 +7,16 @@ from profile.models import WorkerProfile
 class OrderNoAuthForm(forms.Form):
     name = forms.CharField(
         max_length=100,
+        required=False,
         widget=forms.TextInput(attrs={'class': FORMS['FIELD_CLASS']})
     )
     phone = forms.CharField(
         max_length=20,
+        required=False,
         widget=forms.TextInput(attrs={'class': FORMS['FIELD_CLASS']})
     )
     email = forms.EmailField(
+        required=False,
         widget=forms.EmailInput(attrs={'class': FORMS['FIELD_CLASS']})
     )
     worker = forms.ModelChoiceField(

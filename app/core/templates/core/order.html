@@ -29,7 +29,7 @@
         <form method="post" action=".">
             {% csrf_token %}
 
-            {% for field in form %}
+            {% comment %} {% for field in form %}
                 <div class="mb-4">
                 <label class="block text-gray-700">{{ field.label }}</label>
                 {{ field }}
@@ -37,9 +37,25 @@
                     <p class="text-red-500 text-sm">{{ field.errors.0 }}</p>
                 {% endif %}
                 </div>
-            {% endfor %}
+            {% endfor %} {% endcomment %}
 
-            <button class="py-4 px-8 bg-fuchsia-500 text-white rounded-xl">Отправить</button>
+
+
+                {% csrf_token %}
+
+                {% if not user.is_authenticated %}
+                    {{ form.name.label_tag }} {{ form.name }}
+                    {{ form.phone.label_tag }} {{ form.phone }}
+                    {{ form.email.label_tag }} {{ form.email }}
+                {% endif %}
+
+                {{ form.worker.label_tag }} {{ form.worker }}
+                {{ form.service.label_tag }} {{ form.service }}
+                {{ form.start_time.label_tag }} {{ form.start_time }}
+                {{ form.notes.label_tag }} {{ form.notes }}
+
+
+            <button type="submit" class="py-4 px-8 bg-fuchsia-500 text-white rounded-xl mt-3">Отправить</button>
         </form>
     </div>
 

@@ -2,6 +2,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.models import User
+
+from utils.profile_helper import get_profile
 from .forms import PositionForm, SignupForm, WorkerProfileForm
 from .models import ClientProfile, Position, WorkerProfile
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
@@ -340,18 +342,13 @@ def signup(request):
 
 @login_required
 def myaccount(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
     
-    # Получаем профиль клиента, связанный с текущим пользователем
-    try:
-        client_profile = ClientProfile.objects.get(user=request.user)
-    except ClientProfile.DoesNotExist:
-        client_profile = None
-
-    # Получаем все записи Appointment для этого клиента
-    appointments = []
-    if client_profile:
-        appointments = client_profile.appointments.all()
-
+    # Определяем тип профиля пользователя (работник или клиент)
+    profile, profile_type = get_profile(request.user)
+    
     return render(request, 'account/myaccount.html', {
-        'appointments': appointments,
+        'profile': profile,
+        'profile_type': profile_type,
     })

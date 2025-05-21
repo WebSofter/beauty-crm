@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
+from utils.profile_helper import get_profile
 from payment.models import Payment
 from profile.models import ClientProfile
 from service.models import Service
@@ -30,15 +31,18 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
         # Записи
         appointments = []
+        profile_type = None
+        
         if self.request.user.is_superuser:
             appointments = Appointment.objects.all()
         else:
-            try:
-                client_profile = ClientProfile.objects.get(user=self.request.user)
-            except ClientProfile.DoesNotExist:
-                client_profile = None
-            if client_profile:
-                appointments = client_profile.appointments.all()
+            profile, profile_type = get_profile(self.request.user)
+            if profile_type == 'client':
+                appointments = Appointment.objects.filter(client=profile).all()
+            else:
+                appointments = Appointment.objects.filter(worker=profile).all()
+            # client_profile = ClientProfile.objects.get(user=self.request.user)
+            # appointments = Appointment.objects.filter(client=client_profile).all() # ClientProfile.objects.get(user=self.request.user).appointments.all()
 
         # for appointment in appointments:
         #     print("appointment raw data:", appointment.id)
@@ -56,6 +60,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
                 total_income += appointment.service.price
                 total_appointments += 1
         
+        context['profile_type'] = profile_type
         context['total_income'] = total_income
         context['total_appointments'] = total_appointments
         context['appointments'] = appointments

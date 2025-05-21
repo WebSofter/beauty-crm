@@ -8,6 +8,7 @@ from service.models import Service, ServiceCategory
 from django.views.generic.edit import FormView
 from profile.models import ClientProfile
 from django.contrib.auth.models import User
+from django.utils.crypto import get_random_string
 
 def index(request):
     # return render(request, 'core/index.html')
@@ -41,7 +42,7 @@ class OrderView(FormView):
     # model = Appointment
     form_class = OrderNoAuthForm
     template_name = 'core/order.html'
-    success_url = reverse_lazy('profile:myaccount')
+    success_url = reverse_lazy('dashboard:index')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -64,43 +65,25 @@ class OrderView(FormView):
         return kwargs
 
     def form_valid(self, form):
-        # self.object = form.save(commit=False)
-        # self.object.created_by = self.request.user
-        # self.object.save()
-        # Получаем данные из формы
-        # client_data = {
-        #     'name': form.cleaned_data.get('name'),
-        #     'email': form.cleaned_data.get('email'),
-        #     'phone': form.cleaned_data.get('phone'),
-        # }
-        # # Создаем или получаем профиль клиента
-        # client_profile, created = ClientProfile.objects.get_or_create(
-        #     user__firstname=client_data['name'],
-        #     user__username=unidecode(client_data['name']),
-        #     user__email=client_data['email'],
-        #     user__password='secret1989',
-        #     defaults={
-        #         'phone': client_data['phone'],
-        #     }
-        # )
-        # # Если профиль уже существовал, обновим телефон
-        # if not created:
-        #     client_profile.phone = client_data['phone']
-        #     client_profile.save()
-        
-        # 1. Получаем профиль и связанного пользователя
-        # profile = form.save(commit=False)
-        # user = profile.user
         user = self.request.user if self.request.user.is_authenticated else None
         # 2. Обновляем данные пользователя из очищенных данных формы
         if not user:
+            username = unidecode(form.cleaned_data['username'])
+            password = get_random_string(length=6)
+            email = form.cleaned_data['email']
             user = User.objects.create_user(
                 username=unidecode(form.cleaned_data['username']),
-                password='secret1989',
+                password=password,
                 first_name=form.cleaned_data['name'],
                 # last_name=form.cleaned_data['last_name'],
-                email=form.cleaned_data['email'],
+                email=email,
             )
+            if email:
+                send_custom_email(
+                    subject='Создана учетная запись',
+                    message=f'Ваша аккаунт успешно создан: логин: {username}, пароль: {password}',
+                    recipient_list=[email]
+                )
         # Создаем профиль
         client_profile, created = ClientProfile.objects.get_or_create(
             user=user,
@@ -109,12 +92,28 @@ class OrderView(FormView):
             }
         )
         # Создаем запись на прием
+        start_time = form.cleaned_data.get('start_time')
+        worker = form.cleaned_data.get('worker')
+        service = form.cleaned_data.get('service')
         appointment = Appointment.objects.create(
             client=client_profile,
-            service=form.cleaned_data.get('service'),
-            worker=form.cleaned_data.get('worker'),
-            start_time=form.cleaned_data.get('start_time'),
+            service=service,
+            worker=worker,
+            start_time=start_time,
             status='pending',
             notes=form.cleaned_data.get('notes', '')
         )
+        print('worker.user.email:', worker.user.email)
+        if user.email:
+            send_custom_email(
+                subject='Вы записаны в салон красоты',
+                message=f'Вы успешно записаны на процедулу {service.name}. Время: {start_time}',
+                recipient_list=[user.email]
+            )
+        if worker.user.email:
+            send_custom_email(
+                subject='К вам записался клиент',
+                message=f'Клиент записан на процедуру {service.name}. Время: {start_time}',
+                recipient_list=[user.email]
+            )
         return super().form_valid(form)
