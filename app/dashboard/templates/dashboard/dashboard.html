@@ -4,19 +4,12 @@
 
 {% block content %}
 
+<!-- Подключение Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+
 <div class="py-6 px-6">
     <h1 class="mb-6 text-xl">Дашбоард</h1>
-
-    <div class="flex space-x-4">
-        <div class="w-1/2 px-4 py-6 bg-gray-100 rounded-xl leads">
-            <h2 class="mb-4 text-lg">Новые лиды</h2>
-        </div>
-
-        <div class="w-1/2 px-4 py-6 bg-gray-100 rounded-xl clients">
-            <h2 class="mb-4 text-lg">Новые клиенты</h2>
-        </div>
-    </div>
-
   <!-- Пример базовой структуры дашборда -->
   <div class="flex">
     <!-- Сайдбар -->
@@ -25,51 +18,405 @@
         <h1 class="text-xl font-bold">Мой Dashboard</h1>
       </div>
       <ul class="menu">
-        <li class="mb-2"><a href="{% url 'index' %}" class="block p-2 rounded hover:bg-gray-100">Главная</a></li>
-        <li class="mb-2"><a href="#" class="block p-2 rounded hover:bg-gray-100">Профиль</a></li>
-        <li class="mb-2"><a href="#" class="block p-2 rounded hover:bg-gray-100">Настройки</a></li>
+        <li class="mb-2"><a href="{% url 'dashboard:index' %}" class="block p-2 rounded hover:bg-gray-100">Главная</a></li>
+        <li class="mb-2"><a href="{% url 'profile:myaccount' %}" class="block p-2 rounded hover:bg-gray-100">Профиль</a></li>
       </ul>
     </div>
-    
     <!-- Основной контент -->
     <div class="main-content flex-grow p-6">
       <div class="header mb-6">
         <h2 class="text-2xl font-bold">Обзор</h2>
       </div>
       
-      <!-- Карточки статистики -->
+      <!-- Счетчики -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <div class="stat-card bg-white p-6 rounded-xl shadow">
-          <h3 class="text-gray-500 mb-2">Пользователи</h3>
-          <p class="text-3xl font-bold" id="users-count">0</p>
+          <h3 class="text-gray-500 mb-2">Клиенты</h3>
+          <td class="text-3xl font-bold" id="users-count">{{clients.all | length}}</td>
         </div>
         <div class="stat-card bg-white p-6 rounded-xl shadow">
           <h3 class="text-gray-500 mb-2">Доход</h3>
-          <p class="text-3xl font-bold" id="revenue">₽0</p>
+          <td class="text-3xl font-bold" id="revenue">{{total_income}}₽</td>
         </div>
         <div class="stat-card bg-white p-6 rounded-xl shadow">
           <h3 class="text-gray-500 mb-2">Заказы</h3>
-          <p class="text-3xl font-bold" id="orders">0</p>
+          <td class="text-3xl font-bold" id="orders">{{total_appointments}}</td>
         </div>
       </div>
-      
-      <!-- Таблица -->
+    
+
+      <!-- Таблица статистики-->
       <div class="table-container bg-white p-6 rounded-xl shadow">
-        <h3 class="text-xl font-bold mb-4">Последние транзакции</h3>
+        <h3 class="text-xl font-bold mb-4">Статистика мастеров</h3>
+        <table class="w-full">
+          <thead>
+            <tr class="border-b">
+              <th class="text-left p-2">ID</th>
+              <th class="text-left p-2">Мастер</th>
+              <th class="text-left p-2">Позиция</th>
+              <th class="text-left p-2">Заработал</th>
+              <th class="text-left p-2">Рейтинг</th>
+              <th class="text-left p-2">Статусы</th>
+            </tr>
+          </thead>
+          <tbody id="transactions-table">
+            {% for statistic in statistics %}
+              <tr  class="odd:bg-white even:bg-gray-100">
+                <td>
+                    #{{ statistic.worker.id }}
+                </td>
+                <td>
+                    {{ statistic.worker.user.get_full_name }}
+                </td>
+                <td>
+                  <ul>
+                      {% for position in statistic.worker.position.all %}
+                          <li class="inline-block bg-fuchsia-100 text-fuchsia-800 text-xs font-semibold mr-2 mb-1 px-3 py-1 rounded-full">
+                              {{ position.name }}
+                          </li>
+                          {% empty %}
+                          <li >Нет позиций</li>
+                      {% endfor %}
+                  </ul>
+                </td>
+                <td>
+                    {{ statistic.monthly_earned }}₽
+                </td>
+                <td>
+                    {{ statistic.rating }}% <br/>
+                </td>
+                <td>
+                    <span class="inline-block bg-fuchsia-100 text-fuchsia-800 text-xs font-semibold mr-2 mb-1 px-3 py-1 rounded-full">
+                        <b>Звершенных</b>: {{ statistic.completed }}
+                    </span> <br/>
+                    <span class="inline-block bg-fuchsia-100 text-fuchsia-800 text-xs font-semibold mr-2 mb-1 px-3 py-1 rounded-full">
+                        <b>Отмененных</b>: {{ statistic.canceled }}
+                    </span> <br/>
+                    <span class="inline-block bg-fuchsia-100 text-fuchsia-800 text-xs font-semibold mr-2 mb-1 px-3 py-1 rounded-full">
+                        <b>В работе</b>: {{ statistic.confirmed }}
+                    </span>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- График статистики -->
+      <div class="chart-container" style="position: relative; height:300px; width:100%">
+          <canvas id="workersEarningsChart"></canvas>
+      </div>
+
+      <script>
+      $(document).ready(function() {
+          // Подготовка данных из контекста Jinja
+          const statisticsData = [
+              {% for stat in statistics %}
+              {
+                  worker: {
+                      id: {{ stat.worker.id }},
+                      name: "{% if stat.worker.name %}{{ stat.worker.name }}{% else %}Мастер #{{ stat.worker.id }}{% endif %}"
+                  },
+                  total_earned: {% if stat.total_earned %}{{ stat.total_earned }}{% else %}0{% endif %},
+                  monthly_earned: {% if stat.monthly_earned %}{{ stat.monthly_earned }}{% else %}0{% endif %},
+                  rating: {% if stat.rating %}{{ stat.rating }}{% else %}0{% endif %},
+                  completed: {{ stat.completed }},
+                  confirmed: {{ stat.confirmed }},
+                  canceled: {{ stat.canceled }}
+              }{% if not loop.last %},{% endif %}
+              {% endfor %}
+          ];
+          
+          // Извлечение имен мастеров для меток
+          const labels = statisticsData.map(item => item.worker.name);
+          
+          // Извлечение данных о заработке
+          const totalEarningsData = statisticsData.map(item => item.total_earned);
+          const monthlyEarningsData = statisticsData.map(item => item.monthly_earned);
+          
+          // Извлечение данных о записях
+          const completedAppointmentsData = statisticsData.map(item => item.completed);
+          const confirmedAppointmentsData = statisticsData.map(item => item.confirmed);
+          const canceledAppointmentsData = statisticsData.map(item => item.canceled);
+          
+          // Создание графика
+          const ctx = document.getElementById('workersEarningsChart').getContext('2d');
+          const workersChart = new Chart(ctx, {
+              type: 'bar',
+              data: {
+                  labels: labels,
+                  datasets: [
+                      {
+                          label: 'Общий заработок',
+                          data: totalEarningsData,
+                          backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                          borderColor: 'rgba(54, 162, 235, 1)',
+                          borderWidth: 1,
+                          yAxisID: 'y'
+                      },
+                      {
+                          label: 'Месячный заработок',
+                          data: monthlyEarningsData,
+                          backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                          borderColor: 'rgba(75, 192, 192, 1)',
+                          borderWidth: 1,
+                          yAxisID: 'y'
+                      },
+                      {
+                          label: 'Завершенные записи',
+                          data: completedAppointmentsData,
+                          backgroundColor: 'rgba(255, 206, 86, 0.5)',
+                          borderColor: 'rgba(255, 206, 86, 1)',
+                          borderWidth: 1,
+                          type: 'line',
+                          fill: false,
+                          yAxisID: 'y1'
+                      },
+                      {
+                          label: 'Подтвержденные записи',
+                          data: confirmedAppointmentsData,
+                          backgroundColor: 'rgba(153, 102, 255, 0.5)',
+                          borderColor: 'rgba(153, 102, 255, 1)',
+                          borderWidth: 1,
+                          type: 'line',
+                          fill: false,
+                          yAxisID: 'y1'
+                      },
+                      {
+                          label: 'Отмененные записи',
+                          data: canceledAppointmentsData,
+                          backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                          borderColor: 'rgba(255, 99, 132, 1)',
+                          borderWidth: 1,
+                          type: 'line',
+                          fill: false,
+                          yAxisID: 'y1'
+                      }
+                  ]
+              },
+              options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  interaction: {
+                      mode: 'index',
+                      intersect: false,
+                  },
+                  stacked: false,
+                  plugins: {
+                      title: {
+                          display: true,
+                          text: 'Статистика по мастерам: заработок и записи',
+                          font: {
+                              size: 18
+                          }
+                      },
+                      tooltip: {
+                          callbacks: {
+                              label: function(context) {
+                                  let label = context.dataset.label || '';
+                                  if (label) {
+                                      label += ': ';
+                                  }
+                                  if (context.dataset.yAxisID === 'y') {
+                                      label += new Intl.NumberFormat('ru-RU', {
+                                          style: 'currency',
+                                          currency: 'RUB'
+                                      }).format(context.raw);
+                                  } else {
+                                      label += context.raw;
+                                  }
+                                  return label;
+                              }
+                          }
+                      }
+                  },
+                  scales: {
+                      y: {
+                          type: 'linear',
+                          display: true,
+                          position: 'left',
+                          title: {
+                              display: true,
+                              text: 'Заработок (руб.)',
+                              font: {
+                                  size: 14
+                              }
+                          }
+                      },
+                      y1: {
+                          type: 'linear',
+                          display: true,
+                          position: 'right',
+                          title: {
+                              display: true,
+                              text: 'Количество записей',
+                              font: {
+                                  size: 14
+                              }
+                          },
+                          grid: {
+                              drawOnChartArea: false,
+                          },
+                      }
+                  }
+              }
+          });
+      });
+      </script>
+
+      <!-- Таблица загруженности-->
+      <div class="table-container bg-white p-6 rounded-xl shadow mt-10">
+        <h3 class="text-xl font-bold mb-4">Список записей</h3>
         <table class="w-full">
           <thead>
             <tr class="border-b">
               <th class="text-left p-2">ID</th>
               <th class="text-left p-2">Клиент</th>
-              <th class="text-left p-2">Сумма</th>
+              <th class="text-left p-2">Мастер</th>
+              <th class="text-left p-2">Услуга</th>
+              <th class="text-left p-2">Начало</th>
               <th class="text-left p-2">Статус</th>
+              <th class="text-left p-2">Заметки</th>
             </tr>
           </thead>
-          <tbody id="transactions-table">
-            <!-- Данные будут добавлены через JavaScript -->
+          <tbody id="appointment-table">
+            {% for appointment in appointments %}
+                <tr>
+                    <td>
+                        #{{ appointment.id }}
+                    </td>
+                    <td>
+                        {{ appointment.client.user.get_full_name }}<br/>
+                        <span class="inline-block bg-fuchsia-100 text-fuchsia-800 text-xs font-semibold mr-2 mb-2 px-3 py-1 rounded-full">
+                        {{ appointment.client.phone }}
+                        </span><br/>
+                        <span class="inline-block bg-fuchsia-100 text-fuchsia-800 text-xs font-semibold mr-2 mb-2 px-3 py-1 rounded-full">
+                        {{ appointment.client.user.email }}
+                        </span>
+                    </td>
+                    <td>
+                        {{ appointment.worker.user.get_full_name }}<br/>
+                        <span class="inline-block bg-fuchsia-100 text-fuchsia-800 text-xs font-semibold mr-2 mb-2 px-3 py-1 rounded-full">
+                        {{ appointment.worker.user.username }}
+                        </span>
+                    </td>
+                    <td>
+                        {{ appointment.service.name }} <br/>
+                        <span class="inline-block bg-fuchsia-100 text-fuchsia-800 text-xs font-semibold mr-2 mb-2 px-3 py-1 rounded-full">
+                        {{ appointment.service.price }}₽
+                        </span>
+                    </td>
+                    <td>
+                        <time class="inline-block bg-fuchsia-100 text-fuchsia-800 text-xs font-semibold mr-2 mb-2 px-3 py-1 rounded-full">
+                        {{ appointment.start_time }}
+                        </time>
+                    </td>
+                    <td>{{ appointment.get_status_display }}</td>
+                    <td>{{ appointment.notes }}</td>
+              </tr>
+            {% endfor %}
           </tbody>
         </table>
       </div>
+
+  <canvas id="calendarChart" style="max-height: 350px; width: 100%;"></canvas>
+  <script>
+    $(document).ready(function () {
+      const appointments = [
+        {% for a in appointments %}
+          {
+            id: "{{ a.id }}",
+            client: "{{ a.client }}",
+            worker: "{{ a.worker }}",
+            service: "{{ a.service }}",
+            start: new Date("{{ a.start_time.isoformat }}"),
+            end: new Date("{{ a.start_time|add:'0:30:00'|date:'c' }}"), // пример 30 мин длительности
+            status: "{{ a.status }}"
+          },
+        {% endfor %}
+      ];
+
+      const workers = [...new Set(appointments.map(a => a.worker))];
+
+      const colors = {
+        'confirmed': '#4caf50',
+        'pending': '#ff9800',
+        'canceled': '#f44336'
+      };
+
+      const datasets = workers.map((worker, i) => {
+        return {
+          label: worker,
+          data: appointments
+            .filter(a => a.worker === worker)
+            .map(a => ({
+              x: [a.start, a.end],
+              y: worker,
+              backgroundColor: colors[a.status] || '#2196f3',
+              borderColor: '#000',
+              borderWidth: 1,
+              label: `${a.client} ({{ a.service }})`
+            })),
+          parsing: false,
+          borderSkipped: false,
+          borderRadius: 5,
+          barPercentage: 1.0,
+          categoryPercentage: 1.0
+        };
+      });
+
+      new Chart(document.getElementById('calendarChart'), {
+        type: 'bar',
+        data: {
+          labels: workers,
+          datasets: datasets
+        },
+        options: {
+          indexAxis: 'y',
+          scales: {
+            x: {
+              type: 'time',
+              time: {
+                unit: 'hour',
+                tooltipFormat: 'HH:mm',
+                displayFormats: {
+                  hour: 'HH:mm'
+                }
+              },
+              title: {
+                display: true,
+                text: 'Время'
+              }
+            },
+            y: {
+              title: {
+                display: true,
+                text: 'Сотрудник'
+              }
+            }
+          },
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: ctx => `${ctx.raw.label} (${new Date(ctx.raw.x[0]).toLocaleTimeString()} - ${new Date(ctx.raw.x[1]).toLocaleTimeString()})`
+              }
+            },
+            legend: {
+              display: false
+            },
+            title: {
+              display: true,
+              text: 'Занятость сотрудников',
+              font: {
+                size: 18
+              }
+            }
+          }
+        }
+      });
+    });
+  </script>
+      
     </div>
   </div>
 
