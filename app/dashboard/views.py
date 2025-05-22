@@ -41,6 +41,17 @@ class DashboardView(LoginRequiredMixin, TemplateView):
                 appointments = Appointment.objects.filter(client=profile).all()
             else:
                 appointments = Appointment.objects.filter(worker=profile).all()
+                # выплаченная ЗП
+                today = now()
+                month_start = today.replace(day=1)
+                monthly_payout = Payment.objects.filter(
+                    worker=profile,
+                    payment_date__gte=month_start
+                ).aggregate(
+                    total=Sum('amount')
+                )['total'] or 0
+                context['monthly_payout'] = monthly_payout
+                
             # client_profile = ClientProfile.objects.get(user=self.request.user)
             # appointments = Appointment.objects.filter(client=client_profile).all() # ClientProfile.objects.get(user=self.request.user).appointments.all()
 
@@ -59,7 +70,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             if appointment.service and appointment.service.price:
                 total_income += appointment.service.price
                 total_appointments += 1
-        
+            
         context['profile_type'] = profile_type
         context['total_income'] = total_income
         context['total_appointments'] = total_appointments
@@ -72,7 +83,32 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         # Статистика
         today = now()
         month_start = today.replace(day=1)
+        # Get search and sort parameters from request
+        keyword = self.request.GET.get('keyword', '')
+        sort_field = self.request.GET.get('field', 'id')
+        sort_direction = self.request.GET.get('sort', 'asc')
+
+        # Build queryset with search filter
         workers = WorkerProfile.objects.filter(is_active=True)
+        if keyword:
+            workers = workers.filter(user__first_name__icontains=keyword) | workers.filter(user__last_name__icontains=keyword)
+        # Apply sorting
+        if sort_field:
+            if sort_field in ['id']:
+                sort_param = '-' + sort_field if sort_direction == 'desc' else sort_field
+                workers = workers.order_by(sort_param)
+            else:
+            # Apply sorting for worker and position fields
+                if sort_field in ['worker', 'position']:
+                    if sort_field == 'worker':
+                        sort_param = '-user__first_name' if sort_direction == 'desc' else 'user__first_name'
+                    elif sort_field == 'position': 
+                        sort_param = '-position__name' if sort_direction == 'desc' else 'position__name'
+                    else:
+                        sort_param = '-' + sort_field if sort_direction == 'desc' else sort_field
+            workers = workers.order_by(sort_param)
+                    
+                 
         statistics = []
         for worker in workers:
             all_appointments = Appointment.objects.filter(worker=worker)
@@ -98,11 +134,17 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             )
 
             # Выплаченный заработок
-            total_earned = appointments.filter(
-                start_time__lte=month_start
+            # total_earned = appointments.filter(
+            #     start_time__lte=month_start
+            # ).aggregate(
+            #     total=Sum('service__price')
+            # )['total'] or 0
+            monthly_payout = Payment.objects.filter(
+                worker=worker,
+                payment_date__gte=month_start
             ).aggregate(
-                total=Sum('service__price')
-            )['total'] or 0
+                total=Sum('amount')
+            )['total'] or 0   
             
             # Заработок за текущий месяц
             monthly_earned = appointments.filter(
@@ -113,7 +155,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
             statistics.append({
                 'worker': worker,
-                'total_earned': total_earned,
+                'monthly_payout': monthly_payout,
                 'monthly_earned': monthly_earned,
                 'rating': rating,
                 'completed': completed_count,

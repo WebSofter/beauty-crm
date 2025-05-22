@@ -25,6 +25,12 @@
                     <span class="font-medium text-gray-700 w-20">Логин:</span>
                     <span class="text-gray-800 text-sm">{{request.user.username}}</span>
                 </p>
+                {% if profile_type == 'worker' %}
+                    <p class="text-gray-600 flex items-center">
+                        <span class="font-medium text-gray-700 w-20">Счет:</span>
+                        <span class="text-gray-800 text-sm">{{monthly_payout}}₽</span>
+                    </p>
+                {% endif %}
                 <p class="text-gray-600 flex items-center">
                     <span class="font-medium text-gray-700 w-20">Роль:</span>
                     <span class="inline-block px-3 py-1 rounded-full text-sm font-semibold
@@ -79,13 +85,85 @@
         {% if request.user.is_superuser or profile_type == 'worker' %}
         <div class="table-container bg-white p-6 rounded-xl shadow">
             <h3 class="text-xl font-bold mb-4">Статистика мастеров</h3>
-            <table class="w-full">
+            <!-- Добавить перед таблицей -->
+<div class="mb-4 flex flex-col md:flex-row justify-between items-center gap-4">
+    <div class="w-full md:w-1/3">
+        <div class="relative">
+            <input type="text" id="table-search" 
+                   class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-purple-500"
+                   placeholder="Поиск...">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+    
+    <div class="flex gap-4">
+        <select id="sort-field" class="rounded-lg border border-gray-300 py-2 px-4 focus:outline-none focus:border-purple-500">
+            <option value="">Сортировать по</option>
+            <option value="id">ID</option>
+            <option value="worker">Мастер</option>
+            <option value="position">Позиция</option>
+        </select>
+        
+        <select id="sort-direction" class="rounded-lg border border-gray-300 py-2 px-4 focus:outline-none focus:border-purple-500">
+            <option value="asc">По возрастанию</option>
+            <option value="desc">По убыванию</option>
+        </select>
+    </div>
+    <button onClick="doSearch()" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">ok</button>
+</div>
+
+<script>
+let searchLink = '/dashboard'
+const tableSearch = document.getElementById('table-search');
+const sortField = document.getElementById('sort-field');
+const sortDirection = document.getElementById('sort-direction');
+const tbody = document.getElementById('appointment-table');
+
+function filterTable(e) {
+    changeEvent(e)
+}
+
+function sortTable(e) {
+    changeEvent(e)
+}
+
+function changeEvent(e) {
+    searchLink = `/dashboard?keyword=${tableSearch.value}&field=${sortField.value}&sort=${sortDirection.value}`
+}
+
+function doSearch() {
+    if(searchLink) window.location.href = searchLink;
+}
+
+tableSearch.addEventListener('input', filterTable);
+sortField.addEventListener('change', sortTable);
+sortDirection.addEventListener('change', sortTable);
+
+
+// Get URL parameters
+const urlParams = new URLSearchParams(window.location.search);
+const keywordParam = urlParams.get('keyword') || '';
+const fieldParam = urlParams.get('field') || '';
+const sortParam = urlParams.get('sort') || '';
+
+// Set initial values
+if(keywordParam) tableSearch.value = keywordParam;
+if(fieldParam) sortField.value = fieldParam;
+if(sortParam) sortDirection.value = sortParam;
+
+</script>                        
+        <table class="w-full">
             <thead>
                 <tr class="border-b">
                 <th class="text-left p-2">ID</th>
                 <th class="text-left p-2">Мастер</th>
                 <th class="text-left p-2">Позиция</th>
                 {% if request.user.is_superuser %}
+                    <th class="text-left p-2">Выплачено</th>
                     <th class="text-left p-2">Заработал</th>
                 {% endif %}
                 <th class="text-left p-2">Рейтинг</th>
@@ -113,6 +191,9 @@
                     </ul>
                     </td>
                     {% if request.user.is_superuser %}
+                    <td>
+                        {{statistic.monthly_payout}}
+                    </td>
                     <td>
                         {{ statistic.monthly_earned }}₽
                     </td>
@@ -355,7 +436,7 @@
             </tbody>
             </table>
         </div>
-
+        <br/>
 
         <style>
             body {
