@@ -103,7 +103,6 @@ class OrderView(FormView):
             status='pending',
             notes=form.cleaned_data.get('notes', '')
         )
-        print('worker.user.email:', worker.user.email)
         if user.email:
             send_custom_email(
                 subject='Вы записаны в салон красоты',

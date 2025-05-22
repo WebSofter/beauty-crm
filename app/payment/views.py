@@ -7,6 +7,7 @@ from django.shortcuts import render
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 
+from payment.forms import PaymentForm, SalaryForm
 from appointment.models import Appointment
 from profile.models import WorkerProfile
 from .models import Payment
@@ -49,11 +50,17 @@ class PaymentListView(ListView):
             )
 
             # Выплаченный заработок
-            total_earned = appointments.filter(
-                start_time__lte=month_start
+            # total_earned = appointments.filter(
+            #     start_time__lte=month_start
+            # ).aggregate(
+            #     total=Sum('service__price')
+            # )['total'] or 0
+            monthly_payout = Payment.objects.filter(
+                worker=worker,
+                payment_date__gte=month_start
             ).aggregate(
-                total=Sum('service__price')
-            )['total'] or 0
+                total=Sum('amount')
+            )['total'] or 0             
             
             # Заработок за текущий месяц
             monthly_earned = appointments.filter(
@@ -64,7 +71,7 @@ class PaymentListView(ListView):
 
             salaries.append({
                 'worker': worker,
-                'total_earned': total_earned,
+                'monthly_payout': monthly_payout,
                 'monthly_earned': monthly_earned,
                 'rating': rating,
                 'completed': completed_count,
@@ -72,24 +79,59 @@ class PaymentListView(ListView):
                 'confirmed': confirmed_count,
             })
         context['salaries'] = salaries
+        context['payments'] = Payment.objects.all()
         return context
+class PaymentUpdateView(UpdateView):
+    model = WorkerProfile
+    form_class = SalaryForm
+    template_name = 'payment/payment_form.html'
+    success_url = reverse_lazy('payment:list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        worker = self.get_object()
+        print(worker)
+        # context['payment'] = payment
+        # context['worker'] = payment.worker
+        return context
+
+    def form_valid(self, form):
+        worker = form.save(commit=False)
+        worker.save()
+        return super().form_valid(form)
+
+# class PaymentCreateView(CreateView):
+#     model = Payment
+#     form_class = PaymentForm
+#     template_name = 'payment/payment_form.html'
+#     success_url = reverse_lazy('payment:list')
+
+#     def get_initial(self):
+#         initial = super().get_initial()
+#         worker_id = self.request.GET.get('worker')
+#         if worker_id:
+#             initial['worker'] = worker_id
+#         return initial
+
+#     def form_valid(self, form):
+#         form.instance.payment_date = form.instance.payment_date or now()
+#         form.instance.worker = WorkerProfile.objects.get(id=form.instance.worker.id)
+#         return super().form_valid(form)
 
 class PaymentCreateView(CreateView):
     model = Payment
+    form_class = PaymentForm
     template_name = 'payment/payment_form.html'
     success_url = reverse_lazy('payment:list')
 
-class PaymentDetailView(DetailView):
-    model = Payment
-    template_name = 'payment/payment_detail.html'
+    def get_initial(self):
+        initial = super().get_initial()
+        worker_id = self.request.GET.get('worker')
+        if worker_id:
+            initial['worker'] = worker_id
+        return initial
 
-class PaymentUpdateView(UpdateView):
-    model = Payment
-    template_name = 'payment/payment_form.html'
-    fields = '__all__'
-    success_url = reverse_lazy('payment:list')
-
-class PaymentDeleteView(DeleteView):
-    model = Payment
-    template_name = 'payment/payment_confirm_delete.html'
-    success_url = reverse_lazy('payment:list')
+    def form_valid(self, form):
+        if not form.instance.payment_date:
+            form.instance.payment_date = now()
+        return super().form_valid(form)

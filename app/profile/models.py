@@ -21,6 +21,7 @@ class BaseProfile(models.Model):
     address = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    bonuses = models.IntegerField(default=0)
 
     class Meta:
         abstract = True
@@ -30,7 +31,8 @@ class WorkerProfile(BaseProfile):
     hire_date = models.DateField()
     is_active = models.BooleanField(default=True)
     position = models.ManyToManyField(Position, blank=True, related_name='workers')
-
+    salary = models.DecimalField(max_digits=10, decimal_places=2, default=0) 
+        
     def __str__(self):
         return f"Сотрудник: {self.user.get_full_name()}"
 
