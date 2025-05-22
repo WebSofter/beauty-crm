@@ -14,7 +14,11 @@
 
             {% if request.user.is_superuser %}
                 <a href="{% url 'payment:list' %}" class="py-4 px-6 bg-fuchsia-600 rounded-xl text-white">Зарплаты</a>
+            {% endif %}
+            {% if request.user.is_superuser or profile_type == 'worker' %}
                 <a href="{% url 'appointment:list' %}" class="py-4 px-6 bg-fuchsia-600 rounded-xl text-white">Записи</a>
+            {% endif %}
+            {% if request.user.is_superuser %}
                 <div class="relative group inline-block">
                     <a href="{% url 'profile:client_list' %}" class="py-4 px-6 bg-fuchsia-600 rounded-xl text-white inline-flex items-center">
                         Соцфонд

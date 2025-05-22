@@ -1,5 +1,7 @@
 from django.db import models
 
+from profile.models import ClientProfile, WorkerProfile
+
 GENDER_CHOICES = [
     ('M', 'Мужской'),
     ('F', 'Женский'),
@@ -32,3 +34,4 @@ class Service(models.Model):
 
     def __str__(self):
         return self.name
+ 

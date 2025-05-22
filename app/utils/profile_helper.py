@@ -5,7 +5,7 @@ from profile.models import ClientProfile, WorkerProfile
 def get_profile(rquest_user):
     # Определяем тип профиля пользователя (работник или клиент)
     profile = None
-    profile_type = None
+    profile_type = 'admin'
     
     # Сначала проверяем, является ли пользователь клиентом
     try:

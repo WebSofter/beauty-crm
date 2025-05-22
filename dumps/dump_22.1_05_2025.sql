@@ -31,12 +31,45 @@ CREATE TABLE IF NOT EXISTS `appointment_appointment` (
   CONSTRAINT `appointment_appointm_client_id_9829a0eb_fk_profile_c` FOREIGN KEY (`client_id`) REFERENCES `profile_clientprofile` (`id`),
   CONSTRAINT `appointment_appointm_service_id_c235daf3_fk_service_s` FOREIGN KEY (`service_id`) REFERENCES `service_service` (`id`),
   CONSTRAINT `appointment_appointm_worker_id_7bec2fd1_fk_profile_w` FOREIGN KEY (`worker_id`) REFERENCES `profile_workerprofile` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Дамп данных таблицы django_db.appointment_appointment: ~0 rows (приблизительно)
+-- Дамп данных таблицы django_db.appointment_appointment: ~7 rows (приблизительно)
 INSERT INTO `appointment_appointment` (`id`, `start_time`, `created_at`, `status`, `notes`, `client_id`, `service_id`, `worker_id`) VALUES
-	(1, '2025-05-15 16:09:00.000000', '2025-05-18 20:15:47.418796', 'completed', 'Заметки...', 1, 1, 2),
-	(2, '2025-09-13 13:07:00.000000', '2025-05-21 00:34:39.530235', 'confirmed', '3укака', 7, 10, 1);
+	(2, '2025-09-13 13:07:00.000000', '2025-05-21 00:34:39.530235', 'confirmed', '3укака', 7, 10, 1),
+	(3, '2025-05-22 15:00:00.000000', '2025-05-21 09:41:02.155635', 'pending', 'Записался', 7, 23, 1),
+	(4, '2025-05-22 15:00:00.000000', '2025-05-21 09:41:39.834569', 'pending', 'Записался', 7, 23, 1),
+	(5, '2025-05-15 16:00:00.000000', '2025-05-21 09:43:40.945073', 'pending', 'Записался', 7, 9, 1),
+	(6, '2025-05-15 19:00:00.000000', '2025-05-21 09:45:48.771009', 'pending', 'Записался', 7, 4, 1),
+	(7, '2025-05-23 10:35:00.000000', '2025-05-21 10:13:56.008779', 'pending', 'Запись на 23', 7, 33, 3),
+	(8, '2025-05-23 10:35:00.000000', '2025-05-21 10:14:36.012740', 'completed', 'Запись на 23', 7, 33, 3),
+	(9, '2025-05-28 13:00:00.000000', '2025-05-22 14:46:32.246151', 'completed', 'Хочу укладку волос', 8, 9, 4),
+	(10, '2025-05-29 12:00:00.000000', '2025-05-22 15:54:50.440441', 'completed', 'Хочу крутую прическу', 9, 10, 1);
+
+-- Дамп структуры для таблица django_db.appointment_review
+CREATE TABLE IF NOT EXISTS `appointment_review` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `rating` int NOT NULL,
+  `comment` longtext,
+  `created_at` datetime(6) NOT NULL,
+  `updated_at` datetime(6) NOT NULL,
+  `appointment_id` bigint NOT NULL,
+  `client_id` bigint NOT NULL,
+  `worker_id` bigint NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `appointment_review_client_id_appointment_id_abb1a8b5_uniq` (`client_id`,`appointment_id`),
+  KEY `idx_review_client` (`client_id`),
+  KEY `idx_review_worker` (`worker_id`),
+  KEY `idx_review_appointment` (`appointment_id`),
+  CONSTRAINT `appointment_review_appointment_id_84e5c896_fk_appointme` FOREIGN KEY (`appointment_id`) REFERENCES `appointment_appointment` (`id`),
+  CONSTRAINT `appointment_review_client_id_9ded1104_fk_profile_c` FOREIGN KEY (`client_id`) REFERENCES `profile_clientprofile` (`id`),
+  CONSTRAINT `appointment_review_worker_id_2e40d9e1_fk_profile_w` FOREIGN KEY (`worker_id`) REFERENCES `profile_workerprofile` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Дамп данных таблицы django_db.appointment_review: ~0 rows (приблизительно)
+INSERT INTO `appointment_review` (`id`, `rating`, `comment`, `created_at`, `updated_at`, `appointment_id`, `client_id`, `worker_id`) VALUES
+	(5, 4, 'Процедура была выполнена профессионально, мастер внимательно подошёл к индивидуальным особенностям, что позволило полностью расслабиться и снять напряжение. Атмосфера в салоне спокойная и уютная, что дополнительно способствовало комфортному отдыху. ', '2025-05-22 11:34:16.952064', '2025-05-22 11:34:16.952080', 8, 7, 3),
+	(6, 5, 'Укладка волос в салоне превзошла все ожидания! Мастер профессионально и аккуратно выполнил работу, волосы легли идеально, сохраняя форму даже на следующий день без дополнительной укладки. Результат выглядит естественно и стильно, при этом мастер дал полезные советы по уходу и укладке дома.', '2025-05-22 15:18:57.124056', '2025-05-22 15:18:57.124073', 9, 8, 4),
+	(7, 4, 'Очень доволен новой прической! Мастер учёл все мои пожелания, результат получился стильным и аккуратным. Волосы выглядят ухоженно и держат форму целый день. Атмосфера в салоне приятная, обслуживание на высшем уровне. Обязательно вернусь ещё раз! :)', '2025-05-22 16:00:59.482999', '2025-05-22 16:00:59.483016', 10, 9, 1);
 
 -- Дамп структуры для таблица django_db.auth_group
 CREATE TABLE IF NOT EXISTS `auth_group` (
@@ -71,9 +104,9 @@ CREATE TABLE IF NOT EXISTS `auth_permission` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `auth_permission_content_type_id_codename_01ab375a_uniq` (`content_type_id`,`codename`),
   CONSTRAINT `auth_permission_content_type_id_2f476e4b_fk_django_co` FOREIGN KEY (`content_type_id`) REFERENCES `django_content_type` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=89 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=97 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Дамп данных таблицы django_db.auth_permission: ~88 rows (приблизительно)
+-- Дамп данных таблицы django_db.auth_permission: ~80 rows (приблизительно)
 INSERT INTO `auth_permission` (`id`, `name`, `content_type_id`, `codename`) VALUES
 	(1, 'Can add log entry', 1, 'add_logentry'),
 	(2, 'Can change log entry', 1, 'change_logentry'),
@@ -162,7 +195,15 @@ INSERT INTO `auth_permission` (`id`, `name`, `content_type_id`, `codename`) VALU
 	(85, 'Can add Выплата зарплаты', 22, 'add_payment'),
 	(86, 'Can change Выплата зарплаты', 22, 'change_payment'),
 	(87, 'Can delete Выплата зарплаты', 22, 'delete_payment'),
-	(88, 'Can view Выплата зарплаты', 22, 'view_payment');
+	(88, 'Can view Выплата зарплаты', 22, 'view_payment'),
+	(89, 'Can add review', 23, 'add_review'),
+	(90, 'Can change review', 23, 'change_review'),
+	(91, 'Can delete review', 23, 'delete_review'),
+	(92, 'Can view review', 23, 'view_review'),
+	(93, 'Can add review', 24, 'add_review'),
+	(94, 'Can change review', 24, 'change_review'),
+	(95, 'Can delete review', 24, 'delete_review'),
+	(96, 'Can view review', 24, 'view_review');
 
 -- Дамп структуры для таблица django_db.auth_user
 CREATE TABLE IF NOT EXISTS `auth_user` (
@@ -179,20 +220,22 @@ CREATE TABLE IF NOT EXISTS `auth_user` (
   `date_joined` datetime(6) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Дамп данных таблицы django_db.auth_user: ~10 rows (приблизительно)
+-- Дамп данных таблицы django_db.auth_user: ~9 rows (приблизительно)
 INSERT INTO `auth_user` (`id`, `password`, `last_login`, `is_superuser`, `username`, `first_name`, `last_name`, `email`, `is_staff`, `is_active`, `date_joined`) VALUES
-	(1, 'pbkdf2_sha256$1000000$wgLekuZsnbFjfIxyV7GBpe$EsNC6pm6lN2tUngxgtfxvWJ4e92FHON+FWftMxyrMro=', '2025-05-08 16:40:26.614577', 1, 'django_admin', '', '', 'django_admin@gmail.com', 1, 1, '2025-05-07 06:48:55.399954'),
-	(2, 'pbkdf2_sha256$1000000$32MKW6a03oR53zyMvpS8EU$5YumAzDYjJjcTDZLwDNMZkLnniKiGnkMuumspKm9DXc=', NULL, 0, 'someuser', 'Some', 'User', 'mail.websofter@yandex.ru', 0, 1, '2025-05-18 13:17:54.473042'),
-	(4, 'pbkdf2_sha256$1000000$jb8xjlurDapMfzujGF66Hj$XPltRAKXJhlBOThaaTEe+YK34Cy2ubq26M7b0QF2VgI=', NULL, 0, 'someuser1', 'Some1', 'User1', 'mail.websofter1@yandex.ru', 0, 1, '2025-05-18 13:21:01.668706'),
-	(5, 'pbkdf2_sha256$1000000$N9Hxe6ixjByaXGPuoorACa$QJWgyJlnY47lRbd5q1ADRjR31+7BFGJyEGxwENR1WQI=', NULL, 0, 'someuser2', 'Some', 'User', 'mail.websofter2@yandex.ru', 0, 1, '2025-05-18 13:45:11.081494'),
-	(6, 'pbkdf2_sha256$1000000$4YB6qlxQ8xfzLG4fi5Qh4v$MqDi9zdcQFeeMjIhI+wW+VkXZVWKj9jEwrUcbAXkkjM=', NULL, 0, 'someuser3', 'Some', 'User', 'mail.websofter3@yandex.ru', 0, 1, '2025-05-18 13:50:32.374432'),
-	(7, 'pbkdf2_sha256$1000000$Z1p705cRXlZLsJrNZWdOO3$qNH9oBouaTAh8JFRTiNDbWyGFwms5C/nXi1Z57VkzSE=', NULL, 0, 'newuser', 'Name1', 'LastName1', 'Admin@mail.ru', 0, 1, '2025-05-18 16:28:41.689582'),
-	(8, 'pbkdf2_sha256$1000000$9WmZNHEpTgfNFieHPT7U9A$E/2uYMHUbI3VTuhQEMYwsvvY/JR90a1Vl2ILItJlXxI=', NULL, 0, 'customer1', 'Customer1', 'One1', 'test-buyer@mail.ru', 0, 1, '2025-05-18 17:12:15.981801'),
-	(9, 'pbkdf2_sha256$1000000$vkvLVapOrXCFgBlXPPs2nZ$mqhsXGITy42jYaOcZveSVyrOk/sF61NWhPUC1aYbKCM=', NULL, 0, 'reg', 'retgrtg', 'retgrtg', 'retgtg@rtgt.ru', 0, 1, '2025-05-18 17:26:51.651678'),
-	(10, 'pbkdf2_sha256$1000000$sAvXSbfGWmFNEYxojlxDjC$SwtfYFXXWCdRIK1NrrSFLQNHmrNzGvsw/jKNEhby2Ec=', NULL, 0, 'base_TelAviv', 'Wqer', 'QWERT', 'base_TelAviv@mail.ru', 0, 1, '2025-05-18 17:31:04.599734'),
-	(12, 'pbkdf2_sha256$1000000$YLVx1lehaR8Of10KQJZYGC$dYQS+sUvT1/q4Sik4ornB2hpm2iidj1xY7I4fIXMld4=', '2025-05-20 13:48:56.122951', 0, 'newuser99', 'New99', 'User99', 'newuser@mail.ru', 0, 1, '2025-05-18 17:49:45.984048');
+	(1, 'pbkdf2_sha256$1000000$wgLekuZsnbFjfIxyV7GBpe$EsNC6pm6lN2tUngxgtfxvWJ4e92FHON+FWftMxyrMro=', '2025-05-22 15:59:10.304851', 1, 'django_admin', 'Django', 'Admin', 'django_admin@gmail.com', 1, 1, '2025-05-07 06:48:55.399954'),
+	(2, 'pbkdf2_sha256$1000000$wgLekuZsnbFjfIxyV7GBpe$EsNC6pm6lN2tUngxgtfxvWJ4e92FHON+FWftMxyrMro=', NULL, 0, 'ivan', 'Иван', 'Самойлов', 'mail.websofter@yandex.ru', 0, 1, '2025-05-18 13:17:54.473042'),
+	(4, 'pbkdf2_sha256$1000000$wgLekuZsnbFjfIxyV7GBpe$EsNC6pm6lN2tUngxgtfxvWJ4e92FHON+FWftMxyrMro=', '2025-05-22 06:39:12.017618', 0, 'Irina', 'Ирина', 'Роднина', 'mail.websofter1@yandex.ru', 0, 1, '2025-05-18 13:21:01.668706'),
+	(5, 'pbkdf2_sha256$1000000$wgLekuZsnbFjfIxyV7GBpe$EsNC6pm6lN2tUngxgtfxvWJ4e92FHON+FWftMxyrMro=', NULL, 0, 'sergey', 'Сергей', 'Леонов', 'mail.websofter2@yandex.ru', 0, 1, '2025-05-18 13:45:11.081494'),
+	(6, 'pbkdf2_sha256$1000000$wgLekuZsnbFjfIxyV7GBpe$EsNC6pm6lN2tUngxgtfxvWJ4e92FHON+FWftMxyrMro=', '2025-05-22 15:24:54.459532', 0, 'andrey_master', 'Андрей', 'Ларин', 'mail.websofter3@yandex.ru', 0, 1, '2025-05-18 13:50:32.374432'),
+	(7, 'pbkdf2_sha256$1000000$wgLekuZsnbFjfIxyV7GBpe$EsNC6pm6lN2tUngxgtfxvWJ4e92FHON+FWftMxyrMro=', '2025-05-22 06:40:39.466102', 0, 'newuser', 'Ганимед', 'Венедикт', 'Admin@mail.ru', 0, 1, '2025-05-18 16:28:41.689582'),
+	(8, 'pbkdf2_sha256$1000000$wgLekuZsnbFjfIxyV7GBpe$EsNC6pm6lN2tUngxgtfxvWJ4e92FHON+FWftMxyrMro=', NULL, 0, 'sergei', 'Сергей', 'Серов', 'test-buyer@mail.ru', 0, 1, '2025-05-18 17:12:15.981801'),
+	(9, 'pbkdf2_sha256$1000000$wgLekuZsnbFjfIxyV7GBpe$EsNC6pm6lN2tUngxgtfxvWJ4e92FHON+FWftMxyrMro=', NULL, 0, 'pasha', 'Паша', 'Техник', 'retgtg@rtgt.ru', 0, 1, '2025-05-18 17:26:51.651678'),
+	(10, 'pbkdf2_sha256$1000000$wgLekuZsnbFjfIxyV7GBpe$EsNC6pm6lN2tUngxgtfxvWJ4e92FHON+FWftMxyrMro=', NULL, 0, 'ilya', 'Илья', 'Казанец', 'base_TelAviv@mail.ru', 0, 1, '2025-05-18 17:31:04.599734'),
+	(12, 'pbkdf2_sha256$1000000$wgLekuZsnbFjfIxyV7GBpe$EsNC6pm6lN2tUngxgtfxvWJ4e92FHON+FWftMxyrMro=', '2025-05-22 07:26:49.007397', 0, 'gosha', 'Гоша', 'Махавин', 'mail.websofter@gmail.com', 0, 1, '2025-05-18 17:49:45.984048'),
+	(13, 'pbkdf2_sha256$1000000$wgLekuZsnbFjfIxyV7GBpe$EsNC6pm6lN2tUngxgtfxvWJ4e92FHON+FWftMxyrMro=', '2025-05-22 15:15:43.428913', 0, 'bill_client', 'Бил', 'Гейтц', 'mail.beeway@gmail.com', 0, 1, '2025-05-22 12:37:57.828392'),
+	(15, 'pbkdf2_sha256$1000000$wgLekuZsnbFjfIxyV7GBpe$EsNC6pm6lN2tUngxgtfxvWJ4e92FHON+FWftMxyrMro=', '2025-05-22 15:59:56.878601', 0, 'petia', 'Петя', '', 'mail.websofter@gmail.com', 0, 1, '2025-05-22 15:54:48.404994');
 
 -- Дамп структуры для таблица django_db.auth_user_groups
 CREATE TABLE IF NOT EXISTS `auth_user_groups` (
@@ -222,94 +265,6 @@ CREATE TABLE IF NOT EXISTS `auth_user_user_permissions` (
 
 -- Дамп данных таблицы django_db.auth_user_user_permissions: ~0 rows (приблизительно)
 
--- Дамп структуры для таблица django_db.basket
-CREATE TABLE IF NOT EXISTS `basket` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `product_id` int NOT NULL,
-  `customer_id` int NOT NULL,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `fk_basket_product` (`product_id`),
-  KEY `fk_basket_customer` (`customer_id`),
-  CONSTRAINT `fk_basket_customer` FOREIGN KEY (`customer_id`) REFERENCES `product` (`id`),
-  CONSTRAINT `fk_basket_product` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- Дамп данных таблицы django_db.basket: ~0 rows (приблизительно)
-
--- Дамп структуры для таблица django_db.client_client
-CREATE TABLE IF NOT EXISTS `client_client` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `email` varchar(254) NOT NULL,
-  `description` longtext,
-  `created_at` datetime(6) NOT NULL,
-  `modified_at` datetime(6) NOT NULL,
-  `created_by_id` int NOT NULL,
-  `team_id` bigint NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `client_client_created_by_id_a8280477_fk_auth_user_id` (`created_by_id`),
-  KEY `client_client_team_id_03d21ed3_fk_team_team_id` (`team_id`),
-  CONSTRAINT `client_client_created_by_id_a8280477_fk_auth_user_id` FOREIGN KEY (`created_by_id`) REFERENCES `auth_user` (`id`),
-  CONSTRAINT `client_client_team_id_03d21ed3_fk_team_team_id` FOREIGN KEY (`team_id`) REFERENCES `team_team` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- Дамп данных таблицы django_db.client_client: ~0 rows (приблизительно)
-
--- Дамп структуры для таблица django_db.client_clientfile
-CREATE TABLE IF NOT EXISTS `client_clientfile` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `file` varchar(100) NOT NULL,
-  `created_at` datetime(6) NOT NULL,
-  `client_id` bigint NOT NULL,
-  `created_by_id` int NOT NULL,
-  `team_id` bigint NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `client_clientfile_client_id_564c2789_fk_client_client_id` (`client_id`),
-  KEY `client_clientfile_created_by_id_6152b910_fk_auth_user_id` (`created_by_id`),
-  KEY `client_clientfile_team_id_7e856e34_fk_team_team_id` (`team_id`),
-  CONSTRAINT `client_clientfile_client_id_564c2789_fk_client_client_id` FOREIGN KEY (`client_id`) REFERENCES `client_client` (`id`),
-  CONSTRAINT `client_clientfile_created_by_id_6152b910_fk_auth_user_id` FOREIGN KEY (`created_by_id`) REFERENCES `auth_user` (`id`),
-  CONSTRAINT `client_clientfile_team_id_7e856e34_fk_team_team_id` FOREIGN KEY (`team_id`) REFERENCES `team_team` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- Дамп данных таблицы django_db.client_clientfile: ~0 rows (приблизительно)
-
--- Дамп структуры для таблица django_db.client_comment
-CREATE TABLE IF NOT EXISTS `client_comment` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `content` longtext,
-  `created_at` datetime(6) NOT NULL,
-  `client_id` bigint NOT NULL,
-  `created_by_id` int NOT NULL,
-  `team_id` bigint NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `client_comment_client_id_9c6f82a6_fk_client_client_id` (`client_id`),
-  KEY `client_comment_created_by_id_784443cd_fk_auth_user_id` (`created_by_id`),
-  KEY `client_comment_team_id_3e34a737_fk_team_team_id` (`team_id`),
-  CONSTRAINT `client_comment_client_id_9c6f82a6_fk_client_client_id` FOREIGN KEY (`client_id`) REFERENCES `client_client` (`id`),
-  CONSTRAINT `client_comment_created_by_id_784443cd_fk_auth_user_id` FOREIGN KEY (`created_by_id`) REFERENCES `auth_user` (`id`),
-  CONSTRAINT `client_comment_team_id_3e34a737_fk_team_team_id` FOREIGN KEY (`team_id`) REFERENCES `team_team` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- Дамп данных таблицы django_db.client_comment: ~0 rows (приблизительно)
-
--- Дамп структуры для таблица django_db.customer
-CREATE TABLE IF NOT EXISTS `customer` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `username` varchar(50) DEFAULT NULL,
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- Дамп данных таблицы django_db.customer: ~5 rows (приблизительно)
-INSERT INTO `customer` (`id`, `username`, `created_at`) VALUES
-	(1, 'alex', '2025-05-10 16:09:38'),
-	(2, 'max', '2025-05-10 16:09:38'),
-	(3, 'vova', '2025-05-10 16:09:38'),
-	(4, 'maria', '2025-05-10 16:09:38'),
-	(5, 'gella', '2025-05-10 16:09:38');
-
 -- Дамп структуры для таблица django_db.django_admin_log
 CREATE TABLE IF NOT EXISTS `django_admin_log` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -337,12 +292,13 @@ CREATE TABLE IF NOT EXISTS `django_content_type` (
   `model` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `django_content_type_app_label_model_76bd3d3b_uniq` (`app_label`,`model`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Дамп данных таблицы django_db.django_content_type: ~22 rows (приблизительно)
+-- Дамп данных таблицы django_db.django_content_type: ~20 rows (приблизительно)
 INSERT INTO `django_content_type` (`id`, `app_label`, `model`) VALUES
 	(1, 'admin', 'logentry'),
 	(21, 'appointment', 'appointment'),
+	(24, 'appointment', 'review'),
 	(3, 'auth', 'group'),
 	(2, 'auth', 'permission'),
 	(4, 'auth', 'user'),
@@ -357,6 +313,7 @@ INSERT INTO `django_content_type` (`id`, `app_label`, `model`) VALUES
 	(19, 'profile', 'clientprofile'),
 	(20, 'profile', 'position'),
 	(18, 'profile', 'workerprofile'),
+	(23, 'service', 'review'),
 	(16, 'service', 'service'),
 	(17, 'service', 'servicecategory'),
 	(6, 'sessions', 'session'),
@@ -371,9 +328,9 @@ CREATE TABLE IF NOT EXISTS `django_migrations` (
   `name` varchar(255) NOT NULL,
   `applied` datetime(6) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Дамп данных таблицы django_db.django_migrations: ~44 rows (приблизительно)
+-- Дамп данных таблицы django_db.django_migrations: ~48 rows (приблизительно)
 INSERT INTO `django_migrations` (`id`, `app`, `name`, `applied`) VALUES
 	(1, 'contenttypes', '0001_initial', '2025-05-07 06:47:27.113803'),
 	(2, 'auth', '0001_initial', '2025-05-07 06:47:27.551510'),
@@ -418,7 +375,11 @@ INSERT INTO `django_migrations` (`id`, `app`, `name`, `applied`) VALUES
 	(41, 'profile', '0005_alter_position_gender', '2025-05-18 19:50:27.370221'),
 	(42, 'appointment', '0001_initial', '2025-05-18 19:50:27.637090'),
 	(43, 'payment', '0001_initial', '2025-05-18 23:39:15.331284'),
-	(44, 'service', 'manually_add_gender_field', '2025-05-19 06:34:27.023765');
+	(44, 'service', 'manually_add_gender_field', '2025-05-19 06:34:27.023765'),
+	(45, 'profile', '0006_clientprofile_bonuses_workerprofile_bonuses', '2025-05-21 18:19:17.526044'),
+	(46, 'profile', '0007_workerprofile_salary', '2025-05-22 00:14:36.459284'),
+	(47, 'payment', '0002_remove_payment_period_end_and_more', '2025-05-22 02:11:36.674344'),
+	(49, 'appointment', '0002_review', '2025-05-22 08:54:25.183831');
 
 -- Дамп структуры для таблица django_db.django_session
 CREATE TABLE IF NOT EXISTS `django_session` (
@@ -429,101 +390,26 @@ CREATE TABLE IF NOT EXISTS `django_session` (
   KEY `django_session_expire_date_a5c62663` (`expire_date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Дамп данных таблицы django_db.django_session: ~1 rows (приблизительно)
+-- Дамп данных таблицы django_db.django_session: ~2 rows (приблизительно)
 INSERT INTO `django_session` (`session_key`, `session_data`, `expire_date`) VALUES
-	('dg8wgjgremzxq7fplx1su3ynpoy3bezq', '.eJxVjM0OwiAQhN-FsyEU5KcevfcZyC67SNXQpLQn47srSQ96mmS-b-YlIuxbiXvjNc4kLmLQ4vRbIqQH107oDvW2yLTUbZ1RdkUetMlpIX5eD_fvoEArfc0mDIoZiXP2gTKhtzoZHdAGN6LyePaKGNxowKSgUYXslKVvaKAk3h8z_Dj6:1uHNKy:Gi5T0H0m4y137QdolgvoOGDmpoba4YFnBl7jO0TgSwU', '2025-06-03 13:48:56.135809'),
+	('gbkwzbaf3l8dhod7pc268z9anwgefrx1', '.eJxVjEsOgzAMBe-SdRU5hoTQZfecAdlx3NBWIPFZVb17QWLRbmfmvbfpaVtLvy157gcxV-O8ufxCpvTM42HkQeN9smka13lgeyT2tIvtJsmv29n-HRRayr4O0gK7VEtgCBogo0dgD9F5xYoVm4RRELSpIzRatdQS7rhytYoymc8X9aA38w:1uI8Kq:IZWyqfcRI03oCxoj12D0dV0j9UN8infQriuQ4cNi-BM', '2025-06-05 15:59:56.882316'),
 	('op6m8e8u1k5g90mjdg7cn4yhle45b9mq', '.eJxVjE0OwiAYBe_C2hAKKRSX7j0D-f6QqoGktCvj3bVJF7p9M_NeKsG2lrR1WdLM6qwGdfrdEOghdQd8h3prmlpdlxn1ruiDdn1tLM_L4f4dFOjlW0fOLiPxiIiGWLIJFr2dWMA6Y4JDQogxRMhgvCBOzlHGwCMbHnxU7w8qyzl1:1uCYgz:5pp6cx_hW4MtZDwXsrkGkQ4_rfPm0JhfbZlbkjuAyZ4', '2025-05-21 06:55:45.707031');
-
--- Дамп структуры для таблица django_db.lead_comment
-CREATE TABLE IF NOT EXISTS `lead_comment` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `content` longtext,
-  `created_at` datetime(6) NOT NULL,
-  `created_by_id` int NOT NULL,
-  `lead_id` bigint NOT NULL,
-  `team_id` bigint NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `lead_comment_created_by_id_7254878c_fk_auth_user_id` (`created_by_id`),
-  KEY `lead_comment_lead_id_d986e598_fk_lead_lead_id` (`lead_id`),
-  KEY `lead_comment_team_id_2d5e4bc0_fk_team_team_id` (`team_id`),
-  CONSTRAINT `lead_comment_created_by_id_7254878c_fk_auth_user_id` FOREIGN KEY (`created_by_id`) REFERENCES `auth_user` (`id`),
-  CONSTRAINT `lead_comment_lead_id_d986e598_fk_lead_lead_id` FOREIGN KEY (`lead_id`) REFERENCES `lead_lead` (`id`),
-  CONSTRAINT `lead_comment_team_id_2d5e4bc0_fk_team_team_id` FOREIGN KEY (`team_id`) REFERENCES `team_team` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- Дамп данных таблицы django_db.lead_comment: ~0 rows (приблизительно)
-
--- Дамп структуры для таблица django_db.lead_lead
-CREATE TABLE IF NOT EXISTS `lead_lead` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `email` varchar(254) NOT NULL,
-  `description` longtext,
-  `priority` varchar(10) NOT NULL,
-  `status` varchar(10) NOT NULL,
-  `created_at` datetime(6) NOT NULL,
-  `modified_at` datetime(6) NOT NULL,
-  `created_by_id` int NOT NULL,
-  `converted_to_client` tinyint(1) NOT NULL,
-  `team_id` bigint NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `lead_lead_created_by_id_7c49765b_fk_auth_user_id` (`created_by_id`),
-  KEY `lead_lead_team_id_fbb770a0_fk_team_team_id` (`team_id`),
-  CONSTRAINT `lead_lead_created_by_id_7c49765b_fk_auth_user_id` FOREIGN KEY (`created_by_id`) REFERENCES `auth_user` (`id`),
-  CONSTRAINT `lead_lead_team_id_fbb770a0_fk_team_team_id` FOREIGN KEY (`team_id`) REFERENCES `team_team` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- Дамп данных таблицы django_db.lead_lead: ~0 rows (приблизительно)
-
--- Дамп структуры для таблица django_db.lead_leadfile
-CREATE TABLE IF NOT EXISTS `lead_leadfile` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `file` varchar(100) NOT NULL,
-  `created_at` datetime(6) NOT NULL,
-  `created_by_id` int NOT NULL,
-  `lead_id` bigint NOT NULL,
-  `team_id` bigint NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `lead_leadfile_created_by_id_4645ede8_fk_auth_user_id` (`created_by_id`),
-  KEY `lead_leadfile_lead_id_6a88ae7f_fk_lead_lead_id` (`lead_id`),
-  KEY `lead_leadfile_team_id_858384e7_fk_team_team_id` (`team_id`),
-  CONSTRAINT `lead_leadfile_created_by_id_4645ede8_fk_auth_user_id` FOREIGN KEY (`created_by_id`) REFERENCES `auth_user` (`id`),
-  CONSTRAINT `lead_leadfile_lead_id_6a88ae7f_fk_lead_lead_id` FOREIGN KEY (`lead_id`) REFERENCES `lead_lead` (`id`),
-  CONSTRAINT `lead_leadfile_team_id_858384e7_fk_team_team_id` FOREIGN KEY (`team_id`) REFERENCES `team_team` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- Дамп данных таблицы django_db.lead_leadfile: ~0 rows (приблизительно)
 
 -- Дамп структуры для таблица django_db.payment_payment
 CREATE TABLE IF NOT EXISTS `payment_payment` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `amount` decimal(10,2) NOT NULL,
   `payment_date` date NOT NULL,
-  `period_start` date NOT NULL,
-  `period_end` date NOT NULL,
   `comment` longtext,
   `worker_id` bigint NOT NULL,
   PRIMARY KEY (`id`),
   KEY `payment_payment_worker_id_a9644289_fk_profile_workerprofile_id` (`worker_id`),
   CONSTRAINT `payment_payment_worker_id_a9644289_fk_profile_workerprofile_id` FOREIGN KEY (`worker_id`) REFERENCES `profile_workerprofile` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Дамп данных таблицы django_db.payment_payment: ~0 rows (приблизительно)
-
--- Дамп структуры для таблица django_db.product
-CREATE TABLE IF NOT EXISTS `product` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `p_name` varchar(50) DEFAULT NULL,
-  `price` decimal(5,2) DEFAULT NULL,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- Дамп данных таблицы django_db.product: ~3 rows (приблизительно)
-INSERT INTO `product` (`id`, `p_name`, `price`, `created_at`) VALUES
-	(1, 'sugar', 2.99, '2025-05-10 16:58:50'),
-	(2, 'pomidor', 5.34, '2025-05-10 16:58:50'),
-	(3, 'salt', 4.55, '2025-05-10 16:58:50');
+INSERT INTO `payment_payment` (`id`, `amount`, `payment_date`, `comment`, `worker_id`) VALUES
+	(1, 3000.00, '2025-05-22', 'Выплачен аванс', 1);
 
 -- Дамп структуры для таблица django_db.profile_clientprofile
 CREATE TABLE IF NOT EXISTS `profile_clientprofile` (
@@ -534,17 +420,20 @@ CREATE TABLE IF NOT EXISTS `profile_clientprofile` (
   `updated_at` datetime(6) NOT NULL,
   `notes` longtext NOT NULL,
   `user_id` int DEFAULT NULL,
+  `bonuses` int NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_id` (`user_id`),
   CONSTRAINT `profile_clientprofile_user_id_d82fdf84_fk_auth_user_id` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Дамп данных таблицы django_db.profile_clientprofile: ~4 rows (приблизительно)
-INSERT INTO `profile_clientprofile` (`id`, `phone`, `address`, `created_at`, `updated_at`, `notes`, `user_id`) VALUES
-	(1, '9999999999', 'Some address', '2025-05-18 17:12:16.592561', '2025-05-18 17:23:03.791460', 'Some comment', 8),
-	(3, '9253826214', 'Test ул дом 1 кор 3 кв 70', '2025-05-18 17:26:52.293604', '2025-05-18 17:26:52.293632', 'rtgtrg', 9),
-	(5, '9253826214', 'г Москва, ул Грина, д 1 к', '2025-05-18 17:31:05.159905', '2025-05-18 17:31:05.159926', '', 10),
-	(7, '9999999998', 'г Москва, ул Грина, д 1 к', '2025-05-18 17:49:46.508436', '2025-05-18 17:49:46.508457', 'Note some', 12);
+INSERT INTO `profile_clientprofile` (`id`, `phone`, `address`, `created_at`, `updated_at`, `notes`, `user_id`, `bonuses`) VALUES
+	(1, '9999999999', 'Some address', '2025-05-18 17:12:16.592561', '2025-05-18 17:23:03.791460', 'Some comment', 8, 0),
+	(3, '9253826214', 'Test ул дом 1 кор 3 кв 70', '2025-05-18 17:26:52.293604', '2025-05-18 17:26:52.293632', 'rtgtrg', 9, 0),
+	(5, '9253826214', 'г Москва, ул Грина, д 1 к', '2025-05-18 17:31:05.159905', '2025-05-18 17:31:05.159926', '', 10, 0),
+	(7, '9999999998', 'г Москва, ул Грина, д 1 к', '2025-05-18 17:49:46.508436', '2025-05-18 17:49:46.508457', 'Note some', 12, 0),
+	(8, '9253826214', 'г Москва, ул Грина, д 1 к', '2025-05-22 12:37:58.337094', '2025-05-22 14:38:41.304030', 'Разработчик Windows', 13, 0),
+	(9, '9999999999', '', '2025-05-22 15:54:50.434664', '2025-05-22 15:54:50.434685', '', 15, 0);
 
 -- Дамп структуры для таблица django_db.profile_position
 CREATE TABLE IF NOT EXISTS `profile_position` (
@@ -555,7 +444,7 @@ CREATE TABLE IF NOT EXISTS `profile_position` (
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Дамп данных таблицы django_db.profile_position: ~7 rows (приблизительно)
+-- Дамп данных таблицы django_db.profile_position: ~8 rows (приблизительно)
 INSERT INTO `profile_position` (`id`, `name`, `gender`) VALUES
 	(2, 'Парикмахер универсал', 'U'),
 	(3, 'Женский мастер', 'F'),
@@ -575,17 +464,19 @@ CREATE TABLE IF NOT EXISTS `profile_workerprofile` (
   `hire_date` date NOT NULL,
   `is_active` tinyint(1) NOT NULL,
   `user_id` int DEFAULT NULL,
+  `bonuses` int NOT NULL,
+  `salary` decimal(10,2) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_id` (`user_id`),
   CONSTRAINT `profile_workerprofile_user_id_ce760ee6_fk_auth_user_id` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Дамп данных таблицы django_db.profile_workerprofile: ~4 rows (приблизительно)
-INSERT INTO `profile_workerprofile` (`id`, `phone`, `address`, `created_at`, `updated_at`, `hire_date`, `is_active`, `user_id`) VALUES
-	(1, '9253826214', 'г Москва, ул Грина, д 1 к', '2025-05-18 13:21:02.203345', '2025-05-18 16:24:58.503930', '1989-09-16', 1, 4),
-	(2, '9253826214', 'г Москва, ул Грина, д 1 к', '2025-05-18 13:45:11.661002', '2025-05-18 13:45:11.661026', '1989-09-16', 1, 5),
-	(3, '9253826214', 'г Москва, ул Грина, д 1 к', '2025-05-18 13:45:11.672837', '2025-05-18 16:28:42.271911', '1989-09-16', 1, 7),
-	(4, '9253826214', 'г Москва, ул Грина, д 1 к', '2025-05-18 13:50:32.933258', '2025-05-18 13:50:32.933279', '1989-09-16', 1, 6);
+INSERT INTO `profile_workerprofile` (`id`, `phone`, `address`, `created_at`, `updated_at`, `hire_date`, `is_active`, `user_id`, `bonuses`, `salary`) VALUES
+	(1, '9253826214', 'г Москва, ул Грина, д 1 к', '2025-05-18 13:21:02.203345', '2025-05-22 02:24:00.165584', '1989-09-16', 1, 4, 60, 30000.00),
+	(2, '9253826214', 'г Москва, ул Грина, д 1 к', '2025-05-18 13:45:11.661002', '2025-05-18 13:45:11.661026', '1989-09-16', 1, 5, 0, 0.00),
+	(3, '9253826214', 'г Москва, ул Грина, д 1 к', '2025-05-18 13:45:11.672837', '2025-05-18 16:28:42.271911', '1989-09-16', 1, 7, 0, 0.00),
+	(4, '9253826214', 'г Москва, ул Грина, д 1 к', '2025-05-18 13:50:32.933258', '2025-05-18 13:50:32.933279', '1989-09-16', 1, 6, 0, 0.00);
 
 -- Дамп структуры для таблица django_db.profile_workerprofile_position
 CREATE TABLE IF NOT EXISTS `profile_workerprofile_position` (
@@ -627,43 +518,31 @@ CREATE TABLE IF NOT EXISTS `service_service` (
   CONSTRAINT `service_service_category_id_1cbf2f9f_fk_service_s` FOREIGN KEY (`category_id`) REFERENCES `service_servicecategory` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Дамп данных таблицы django_db.service_service: ~9 rows (приблизительно)
+-- Дамп данных таблицы django_db.service_service: ~36 rows (приблизительно)
 INSERT INTO `service_service` (`id`, `name`, `description`, `duration`, `price`, `is_active`, `created_at`, `updated_at`, `category_id`, `gender`) VALUES
-	(1, 'Парикмахер универсал', 'Услуги мужской стрижки головы', 30, 600.00, 1, '2025-05-17 15:02:16.014816', '2025-05-19 18:56:29.749205', 3, 'U'),
 	(2, 'Женская стрижка', 'Стрижка женская (короткие/средние/длинные волосы)', 120, 1500.00, 1, '2025-05-17 15:34:08.428821', '2025-05-19 19:14:43.109677', 3, 'F'),
 	(4, 'Мужская стрижка', 'Стрижка мужская (машинкой/ножницами/классическая/модельная)', 30, 600.00, 1, '2025-05-19 18:59:05.162147', '2025-05-19 19:14:59.559326', 3, 'M'),
-	(5, 'Детская стрижка', 'Детская стрижка (до 7 лет/от 7 до 14 лет)', 30, 500.00, 1, '2025-05-19 19:01:14.715001', '2025-05-19 19:15:14.515680', 3, 'U'),
 	(6, 'Окрашивание волос', 'Окрашивание волос (однотонное/сложное/балаяж/омбре/мелирование)', 40, 700.00, 1, '2025-05-19 19:01:57.233945', '2025-05-19 19:15:35.577394', 3, 'F'),
 	(7, 'Тонирование волос', 'Тонирование волос', 60, 800.00, 1, '2025-05-19 19:16:06.183783', '2025-05-19 19:16:06.183804', 3, 'U'),
-	(8, 'Блондирование волос', 'Блондирование волос', 60, 800.00, 1, '2025-05-19 19:16:23.823045', '2025-05-19 19:16:23.823065', 3, 'U'),
+	(8, 'Блондирование волос', 'Блондирование волос', 60, 800.00, 1, '2025-05-19 19:16:23.823045', '2025-05-22 12:18:50.889897', 3, 'M'),
 	(9, 'Укладка волос', 'Укладка волос (повседневная/вечерняя/свадебная)', 60, 900.00, 1, '2025-05-19 19:17:04.093091', '2025-05-19 19:17:04.093113', 3, 'F'),
 	(10, 'Прически', 'Прически (дневные/вечерние/свадебные)', 60, 800.00, 1, '2025-05-19 19:17:30.729448', '2025-05-19 19:17:30.729467', 3, 'U'),
 	(11, 'Маникюр', 'Маникюр (классический/европейский/аппаратный/комбинированный)', 50, 500.00, 1, '2025-05-20 13:56:24.009862', '2025-05-20 13:56:24.009878', 4, 'F'),
-	(12, 'Покрытие гель-лаком', 'Покрытие гель-лаком', 30, 400.00, 1, '2025-05-20 13:56:59.869679', '2025-05-20 13:56:59.869698', 4, 'F'),
-	(13, 'Педикюр', 'Педикюр (классический/аппаратный/комбинированный)', 120, 900.00, 1, '2025-05-20 13:57:21.610163', '2025-05-20 13:57:21.610184', 4, 'F'),
-	(14, 'Наращивание ногтей', 'Наращивание ногтей (гелем/акрилом)', 50, 800.00, 1, '2025-05-20 13:57:51.893315', '2025-05-20 13:57:51.893336', 4, 'F'),
-	(15, 'Дизайн ногтей', 'Дизайн ногтей (простой/сложный/художественная роспись)', 40, 900.00, 1, '2025-05-20 13:58:12.732761', '2025-05-20 13:58:12.732778', 4, 'F'),
-	(16, 'Укрепление ногтей', 'Укрепление натуральных ногтей', 40, 700.00, 1, '2025-05-20 13:58:35.445791', '2025-05-20 13:58:35.445810', 4, 'U'),
 	(17, 'Снятие покрытия/наращивания', 'Снятие покрытия/наращивания', 50, 750.00, 1, '2025-05-20 13:59:14.325223', '2025-05-20 13:59:14.325241', 4, 'U'),
 	(18, 'Дневной макияж', 'Дневной макияж', 30, 400.00, 1, '2025-05-20 14:03:27.193046', '2025-05-20 14:03:27.193063', 5, 'M'),
 	(19, 'Свадебный макияж', 'Услуги свадебного макияжа', 130, 850.00, 1, '2025-05-20 14:04:03.931809', '2025-05-20 14:04:03.931830', 5, 'U'),
 	(20, 'Оформление бровей', 'Оформление бровей (коррекция/окрашивание)', 40, 650.00, 1, '2025-05-20 14:04:29.101608', '2025-05-20 14:04:29.101629', 5, 'U'),
 	(21, 'Наращивание ресниц', 'Наращивание ресниц (классика/объем 2D/3D/голливуд)', 50, 950.00, 1, '2025-05-20 14:04:50.211846', '2025-05-20 14:04:50.211863', 5, 'F'),
 	(22, 'Окрашивание ресниц', 'Окрашивание ресниц', 30, 700.00, 1, '2025-05-20 14:05:29.831561', '2025-05-20 14:05:29.831580', 5, 'F'),
-	(23, 'Чистка лица', 'Чистка лица (ультразвуковая/механическая/комбинированная)', 40, 890.00, 1, '2025-05-20 14:06:10.495829', '2025-05-20 14:06:10.495848', 6, 'U'),
-	(24, 'Пилинги', 'Пилинги (химические/энзимные/фруктовые)', 40, 650.00, 1, '2025-05-20 14:06:36.422857', '2025-05-20 14:06:36.422879', 6, 'U'),
+	(23, 'Чистка лица', 'Чистка лица (ультразвуковая/механическая/комбинированная)', 40, 890.00, 1, '2025-05-20 14:06:10.495829', '2025-05-22 12:19:12.840991', 6, 'M'),
 	(25, 'Уход за лицом', 'Уходовые процедуры для лица', 40, 800.00, 1, '2025-05-20 14:07:09.985693', '2025-05-20 14:07:09.985714', 6, 'U'),
 	(26, 'Инъекционная косметология', 'Инъекционная косметология (ботулинотерапия/филлеры)', 210, 9500.00, 1, '2025-05-20 14:07:56.341633', '2025-05-20 14:07:56.341663', 6, 'U'),
 	(27, 'Массаж лица', 'Массаж лица (классический/лимфодренажный/скульптурный)', 50, 550.00, 1, '2025-05-20 14:08:24.145894', '2025-05-20 14:08:24.145922', 6, 'U'),
 	(28, 'СПА', 'СПА-программы для тела', 40, 900.00, 1, '2025-05-20 14:08:55.572164', '2025-05-20 14:08:55.572186', 7, 'U'),
 	(29, 'Обертывания', 'Обертывания (шоколадное/водорослевое/грязевое)', 50, 2000.00, 1, '2025-05-20 14:09:20.723883', '2025-05-20 14:09:20.723902', 7, 'U'),
 	(30, 'Шугаринг', 'Шугаринг (различные зоны)', 30, 550.00, 1, '2025-05-20 14:09:41.176105', '2025-05-20 14:09:41.176127', 7, 'F'),
-	(31, 'Восковая депиляция', 'Восковая депиляция (различные зоны)', 45, 800.00, 1, '2025-05-20 14:10:07.171123', '2025-05-20 14:10:07.171142', 7, 'F'),
 	(32, 'Лазерная эпиляция', 'Лазерная эпиляция (различные зоны)', 60, 1500.00, 1, '2025-05-20 14:10:40.042821', '2025-05-20 14:10:40.042843', 7, 'U'),
 	(33, 'Массаж тела', 'Массаж тела (общий/антицеллюлитный/релаксирующий/спортивный)', 20, 1000.00, 1, '2025-05-20 14:11:14.736981', '2025-05-20 14:11:14.737001', 7, 'U'),
-	(34, 'Перманентный макияж', 'Перманентный макияж (губы/брови/межресничное пространство)', 45, 890.00, 1, '2025-05-20 14:11:53.350440', '2025-05-20 14:11:53.350459', 8, 'U'),
-	(35, 'Татуировка', 'Художественная татуировка', 120, 5500.00, 1, '2025-05-20 14:12:32.463679', '2025-05-20 14:12:32.463697', 8, 'U'),
-	(36, 'Коррекция татуировки', 'Коррекция татуировки', 30, 500.00, 1, '2025-05-20 14:12:52.023185', '2025-05-20 14:12:52.023203', 8, 'U'),
 	(37, 'Пирсинг', 'Пирсинг (различные зоны)', 30, 900.00, 1, '2025-05-20 14:13:15.688598', '2025-05-20 14:13:15.688618', 8, 'U');
 
 -- Дамп структуры для таблица django_db.service_servicecategory
@@ -683,101 +562,6 @@ INSERT INTO `service_servicecategory` (`id`, `name`, `description`, `is_active`)
 	(6, 'Косметология и уход', 'Косметология и уход', 1),
 	(7, 'SPA и телесный уход', 'SPA и телесный уход', 1),
 	(8, 'Прочее', 'Прочее', 1);
-
--- Дамп структуры для таблица django_db.team_plan
-CREATE TABLE IF NOT EXISTS `team_plan` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) NOT NULL,
-  `price` int NOT NULL,
-  `description` longtext,
-  `max_leads` int NOT NULL,
-  `max_clients` int NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- Дамп данных таблицы django_db.team_plan: ~0 rows (приблизительно)
-INSERT INTO `team_plan` (`id`, `name`, `price`, `description`, `max_leads`, `max_clients`) VALUES
-	(1, 'Basic', 10, 'Some desc plan', 10, 10);
-
--- Дамп структуры для таблица django_db.team_team
-CREATE TABLE IF NOT EXISTS `team_team` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) NOT NULL,
-  `created_at` datetime(6) NOT NULL,
-  `created_by_id` int NOT NULL,
-  `plan_id` bigint DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `team_team_created_by_id_368dcdf9_fk_auth_user_id` (`created_by_id`),
-  KEY `team_team_plan_id_a68f140a_fk_team_plan_id` (`plan_id`),
-  CONSTRAINT `team_team_created_by_id_368dcdf9_fk_auth_user_id` FOREIGN KEY (`created_by_id`) REFERENCES `auth_user` (`id`),
-  CONSTRAINT `team_team_plan_id_a68f140a_fk_team_plan_id` FOREIGN KEY (`plan_id`) REFERENCES `team_plan` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- Дамп данных таблицы django_db.team_team: ~0 rows (приблизительно)
-INSERT INTO `team_team` (`id`, `name`, `created_at`, `created_by_id`, `plan_id`) VALUES
-	(1, 'My Team', '2022-11-24 16:38:04.849166', 1, 1);
-
--- Дамп структуры для таблица django_db.team_team_members
-CREATE TABLE IF NOT EXISTS `team_team_members` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `team_id` bigint NOT NULL,
-  `user_id` int NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `team_team_members_team_id_user_id_69a9a465_uniq` (`team_id`,`user_id`),
-  KEY `team_team_members_user_id_efff62b4_fk_auth_user_id` (`user_id`),
-  CONSTRAINT `team_team_members_team_id_5e29636e_fk_team_team_id` FOREIGN KEY (`team_id`) REFERENCES `team_team` (`id`),
-  CONSTRAINT `team_team_members_user_id_efff62b4_fk_auth_user_id` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- Дамп данных таблицы django_db.team_team_members: ~0 rows (приблизительно)
-INSERT INTO `team_team_members` (`id`, `team_id`, `user_id`) VALUES
-	(1, 1, 1);
-
--- Дамп структуры для таблица django_db.time_test
-CREATE TABLE IF NOT EXISTS `time_test` (
-  `t_date` date DEFAULT NULL,
-  `t_time` time DEFAULT NULL,
-  `t_datetime` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- Дамп данных таблицы django_db.time_test: ~2 rows (приблизительно)
-INSERT INTO `time_test` (`t_date`, `t_time`, `t_datetime`) VALUES
-	('2025-05-09', '15:31:46', '2025-05-09 15:31:46'),
-	('2025-05-10', '15:31:56', '2025-05-09 15:31:56');
-
--- Дамп структуры для таблица django_db.transaction
-CREATE TABLE IF NOT EXISTS `transaction` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `customer_id` int DEFAULT NULL,
-  `careated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `customer_id` (`customer_id`),
-  CONSTRAINT `transaction_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- Дамп данных таблицы django_db.transaction: ~5 rows (приблизительно)
-INSERT INTO `transaction` (`id`, `customer_id`, `careated_at`) VALUES
-	(1, 1, '2025-05-10 16:11:39'),
-	(2, 2, '2025-05-10 16:11:39'),
-	(3, 3, '2025-05-10 16:11:39'),
-	(4, 4, '2025-05-10 16:11:39'),
-	(5, 5, '2025-05-10 16:11:39');
-
--- Дамп структуры для таблица django_db.userprofile_userprofile
-CREATE TABLE IF NOT EXISTS `userprofile_userprofile` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `user_id` int NOT NULL,
-  `active_team_id` bigint DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `user_id` (`user_id`),
-  KEY `userprofile_userprofile_active_team_id_3df66d44_fk_team_team_id` (`active_team_id`),
-  CONSTRAINT `userprofile_userprofile_active_team_id_3df66d44_fk_team_team_id` FOREIGN KEY (`active_team_id`) REFERENCES `team_team` (`id`),
-  CONSTRAINT `userprofile_userprofile_user_id_59dda034_fk_auth_user_id` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- Дамп данных таблицы django_db.userprofile_userprofile: ~0 rows (приблизительно)
-INSERT INTO `userprofile_userprofile` (`id`, `user_id`, `active_team_id`) VALUES
-	(2, 1, 1);
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

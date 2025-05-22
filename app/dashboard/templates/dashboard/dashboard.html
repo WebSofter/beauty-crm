@@ -384,7 +384,12 @@ if(sortParam) sortDirection.value = sortParam;
         {% endif %}
         <!-- Таблица загруженности-->
         <div class="table-container bg-white p-6 rounded-xl shadow mt-10">
-            <h3 class="text-xl font-bold mb-4">Список записей</h3>
+            <h3 class="text-xl font-bold mb-4">
+                Список 
+                {% if profile_type == 'client' %}
+                моих
+                {% endif %}
+                записей</h3>
             <table class="w-full">
             <thead>
                 <tr class="border-b">
@@ -392,9 +397,11 @@ if(sortParam) sortDirection.value = sortParam;
                 <th class="text-left p-2">Клиент</th>
                 <th class="text-left p-2">Мастер</th>
                 <th class="text-left p-2">Услуга</th>
+                <th class="text-left p-2">Отзывы</th>
                 <th class="text-left p-2">Начало</th>
                 <th class="text-left p-2">Статус</th>
                 <th class="text-left p-2">Заметки</th>
+                <th class="text-left p-2">Действия</th>
                 </tr>
             </thead>
             <tbody id="appointment-table">
@@ -424,6 +431,7 @@ if(sortParam) sortDirection.value = sortParam;
                             {{ appointment.service.price }}₽
                             </span>
                         </td>
+                        <td class="text-center">{{ appointment.reviews.all|length }}</td>
                         <td>
                             <time class="inline-block bg-fuchsia-100 text-fuchsia-800 text-xs font-semibold mr-2 mb-2 px-3 py-1 rounded-full">
                             {{ appointment.start_time }}
@@ -431,6 +439,15 @@ if(sortParam) sortDirection.value = sortParam;
                         </td>
                         <td>{{ appointment.get_status_display }}</td>
                         <td>{{ appointment.notes }}</td>
+                        <td style="text-align: center;">
+                            {% if profile_type == "client" and appointment.status == 'completed' %}
+                                <a href="{% url 'appointment:review' appointment.id %}"  class="inline-block p-2 bg-blue-500 hover:bg-blue-600 text-white rounded-r-full transition duration-200 my-2 ml-2">
+                                    <i class="fa fa-pen"></i>
+                                </a>
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
                 </tr>
                 {% endfor %}
             </tbody>

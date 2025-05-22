@@ -1,6 +1,6 @@
 from django import forms
 from beautycrm.constants import FORMS
-from appointment.models import Appointment
+from appointment.models import Appointment, Review
 
 class AppointmentForm(forms.ModelForm):
     class Meta:
@@ -23,4 +23,21 @@ class AppointmentForm(forms.ModelForm):
             }),
             'status': forms.Select(attrs={'class': FORMS['FIELD_CLASS']}),
             'notes': forms.Textarea(attrs={'rows': 3, 'class': FORMS['FIELD_CLASS']}),
+        }
+
+
+
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ('rating', 'comment')  # Только поля, которые заполняет пользователь
+        widgets = {
+            'rating': forms.Select(attrs={
+                'class': FORMS['FIELD_CLASS'],
+            }),
+            'comment': forms.Textarea(attrs={
+                'class': FORMS['FIELD_CLASS'],
+                'rows': 4,
+                'placeholder': 'Поделитесь своим отзывом о предоставленной услуге...'
+            }),
         }

@@ -84,7 +84,7 @@ class ClientProfileForm(forms.ModelForm):
         'placeholder': 'Имя пользователя',
         'class': INPUT_CLASS
     }))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={
+    password = forms.CharField(required=False, widget=forms.PasswordInput(attrs={
         'class': INPUT_CLASS,
         'autocomplete': 'new-password',
     }))

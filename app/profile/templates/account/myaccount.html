@@ -22,10 +22,15 @@
 
         <hr class="my-6">
         
-        <form method="post" action="{% url 'logout' %}" class="flex justify-center">
-            {% csrf_token %}
-            <button type="submit" class="py-3 px-6 bg-red-600 hover:bg-red-700 rounded-lg text-white transition-colors">Выйти</button>
-        </form>
+        <div class="flex justify-center space-x-4">
+            <form method="post" action="{% url 'logout' %}" class="flex justify-center">
+                {% csrf_token %}
+                <button type="submit" class="py-3 px-6 bg-red-600 hover:bg-red-700 rounded-lg text-white transition-colors">Выйти</button>
+            </form>
+            {% if profile_type == 'client' %}
+                <a class="py-3 px-6 bg-green-600 hover:bg-green-700 rounded-lg text-white transition-colors" href="{% url 'profile:update_myaccount' profile.id %}">Изменить</a>
+            {% endif %}
+        </div>    
     </div>
 </div>
 {% endblock %}

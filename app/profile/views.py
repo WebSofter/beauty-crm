@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.models import User
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 from utils.profile_helper import get_profile
 from .forms import PositionForm, SignupForm, WorkerProfileForm
 from .models import ClientProfile, Position, WorkerProfile
@@ -352,3 +352,8 @@ def myaccount(request):
         'profile': profile,
         'profile_type': profile_type,
     })
+
+
+class MyAccountUpdateView(LoginRequiredMixin, ClientUpdateView):
+    template_name = 'account/form.html'
+    success_url = reverse_lazy('profile:myaccount')

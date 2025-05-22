@@ -26,5 +26,6 @@ urlpatterns = [
     
     # Account
     path('myaccount/', views.myaccount, name='myaccount'),
+    path('update_myaccount/<int:pk>', views.MyAccountUpdateView.as_view(), name='update_myaccount'),
     path('sign-up/', views.signup, name='signup'),
 ]

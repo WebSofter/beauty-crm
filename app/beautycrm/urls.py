@@ -5,6 +5,7 @@ from django.contrib.auth import views
 from django.urls import path, include
 
 from core.views import index, about, service, OrderView
+
 from profile.forms import LoginForm
 
 urlpatterns = [

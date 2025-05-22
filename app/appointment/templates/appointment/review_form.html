@@ -1,0 +1,39 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto p-6">
+    <h1 class="text-2xl font-bold mb-6">Оставить отзыв</h1>
+    
+    <!-- Информация о записи -->
+    <div class="bg-gray-100 p-4 rounded-lg mb-6">
+        <h3 class="font-semibold mb-2">Информация о записи:</h3>
+        <p><strong>Специалист:</strong> {{ view.appointment.worker.user.get_full_name }}</p>
+        <p><strong>Услуга:</strong> {{ view.appointment.service.name }}</p>
+        {% if view.appointment.date %}
+        <p><strong>Дата:</strong> {{ view.appointment.date|date:"d.m.Y" }}</p>
+        <p><strong>Время:</strong> {{ view.appointment.time|time:"H:i" }}</p>
+        {% endif %}
+    </div>
+    <form method="post" action="{% url 'appointment:review' view.appointment.id %}">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="mb-4">
+                <label class="block text-gray-700 font-medium mb-2">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ field.errors.0 }}</p>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <div class="flex gap-4">
+            <button type="submit" class="py-3 px-6 bg-green-500 hover:bg-green-600 text-white rounded-lg transition duration-200">
+                Отправить отзыв
+            </button>
+            <a href="{% url 'dashboard:index' %}" class="py-3 px-6 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition duration-200">
+                Отмена
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -34,14 +34,13 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         profile_type = None
         
         if self.request.user.is_superuser:
-            appointments = Appointment.objects.all()
+            appointments = Appointment.objects.all().prefetch_related('reviews')
         else:
             profile, profile_type = get_profile(self.request.user)
             if profile_type == 'client':
-                appointments = Appointment.objects.filter(client=profile).all()
+                appointments = Appointment.objects.filter(client=profile).all().prefetch_related('reviews')
             else:
-                appointments = Appointment.objects.filter(worker=profile).all()
-                # выплаченная ЗП
+                appointments = Appointment.objects.filter(worker=profile).all().prefetch_related('reviews')                # выплаченная ЗП
                 today = now()
                 month_start = today.replace(day=1)
                 monthly_payout = Payment.objects.filter(
@@ -52,13 +51,6 @@ class DashboardView(LoginRequiredMixin, TemplateView):
                 )['total'] or 0
                 context['monthly_payout'] = monthly_payout
                 
-            # client_profile = ClientProfile.objects.get(user=self.request.user)
-            # appointments = Appointment.objects.filter(client=client_profile).all() # ClientProfile.objects.get(user=self.request.user).appointments.all()
-
-        # for appointment in appointments:
-        #     print("appointment raw data:", appointment.id)
-        #     print("client:", appointment.client)
-        #     print("worker:", appointment.worker)
         #     print("service:", appointment.service)
         #     print("start_time:", appointment.start_time)
         #     print("status:", appointment.status)
@@ -66,7 +58,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         total_income = 0
         total_appointments = 0
 
-        for appointment in appointments:
+        for appointment in appointments: 
             if appointment.service and appointment.service.price:
                 total_income += appointment.service.price
                 total_appointments += 1

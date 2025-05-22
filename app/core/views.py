@@ -3,7 +3,7 @@ from django.urls import reverse_lazy
 from unidecode import unidecode
 from utils.messager import send_custom_email
 from core.forms import OrderForm, OrderNoAuthForm
-from appointment.models import Appointment
+from appointment.models import Appointment, Review
 from service.models import Service, ServiceCategory
 from django.views.generic.edit import FormView
 from profile.models import ClientProfile
@@ -11,13 +11,16 @@ from django.contrib.auth.models import User
 from django.utils.crypto import get_random_string
 
 def index(request):
-    # return render(request, 'core/index.html')
     # Получаем все активные категории
     categories = ServiceCategory.objects.filter(is_active=True)
+    
+    # Получаем список отзывов
+    reviews = Review.objects.all()
     
     # Контекст с категориями и их услугами
     context = {
         'service_categories': categories,
+        'reviews': reviews,
     }
         
     return render(request, 'core/index.html', context)
@@ -68,11 +71,11 @@ class OrderView(FormView):
         user = self.request.user if self.request.user.is_authenticated else None
         # 2. Обновляем данные пользователя из очищенных данных формы
         if not user:
-            username = unidecode(form.cleaned_data['username'])
+            username = unidecode(form.cleaned_data['name'].lower())
             password = get_random_string(length=6)
             email = form.cleaned_data['email']
             user = User.objects.create_user(
-                username=unidecode(form.cleaned_data['username']),
+                username=username,
                 password=password,
                 first_name=form.cleaned_data['name'],
                 # last_name=form.cleaned_data['last_name'],
@@ -113,6 +116,6 @@ class OrderView(FormView):
             send_custom_email(
                 subject='К вам записался клиент',
                 message=f'Клиент записан на процедуру {service.name}. Время: {start_time}',
-                recipient_list=[user.email]
+                recipient_list=[worker.user.email]
             )
         return super().form_valid(form)
